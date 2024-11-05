@@ -1,0 +1,75 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+__ngcc_entry_points__.json
+
+# compiled output
+/component-store-publish
+/resize-observer-publish
+/ant-design-icons-publish
+/blog
+/blog-publish
+/dist
+/tmp
+/junit
+out-tsc/
+/publish
+/components-publish
+/ngrx-platform-publish
+/lib
+/schematics/demo
+/schematics/utils/version-names.ts
+ng-zorro.github.io/
+/apps/logs/
+/apps/site/src/app/newRoutes.txt
+/apps/site/src/app/docs/
+/apps/site/src/assets/compact.*
+/apps/site/src/assets/dark.*
+/apps/site/src/assets/default.*
+/obj
+/bin
+/Blog-Angular.njsproj
+
+# dependencies
+/node_modules
+node_modules.*/
+/package-lock.json
+integration/**/package-lock.json
+
+# IDEs and editors
+.npmrc
+.nvmrc
+.eslintcache
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.nx/*
+.angular/*
+.vscode/*
+.vs/*
+
+# misc
+/http-config.json
+/.sass-cache
+/connect.lock
+/coverage
+/coverage-report
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+yarn-error.log
+.yarn-integrity
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db
