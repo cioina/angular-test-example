@@ -1,4 +1,4 @@
-import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
@@ -37,8 +37,13 @@ describe('login.component', () => {
       localStorage.clear();
 
       TestBed.configureTestingModule({
-        providers: [provideNzIconsTesting(), provideComponentStore(AuthStore), NzDrawerService],
-        imports: [NoopAnimationsModule, HttpClientModule, LoginComponent]
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, LoginComponent]
       }).compileComponents();
 
       fixture = TestBed.createComponent(LoginComponent);
@@ -156,7 +161,7 @@ describe('login.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, LoginComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, LoginComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -235,7 +240,7 @@ describe('login.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, LoginComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, LoginComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);

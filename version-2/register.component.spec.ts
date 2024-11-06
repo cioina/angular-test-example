@@ -1,5 +1,5 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector, DebugElement } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
@@ -39,8 +39,13 @@ describe('register.component', () => {
       localStorage.clear();
 
       TestBed.configureTestingModule({
-        providers: [provideNzIconsTesting(), provideComponentStore(AuthStore), NzDrawerService],
-        imports: [NoopAnimationsModule, HttpClientModule, RegisterComponent]
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, RegisterComponent]
       }).compileComponents();
 
       fixture = TestBed.createComponent(RegisterComponent);
@@ -228,8 +233,13 @@ describe('register.component', () => {
 
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
-        providers: [provideNzIconsTesting(), provideComponentStore(AuthStore), NzDrawerService],
-        imports: [NoopAnimationsModule, HttpClientModule, RegisterComponent]
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, RegisterComponent]
       }).compileComponents();
 
       fixture = TestBed.createComponent(RegisterComponent);
@@ -339,7 +349,7 @@ describe('register.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, RegisterComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, RegisterComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -458,7 +468,7 @@ describe('register.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, RegisterComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, RegisterComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);

@@ -1,5 +1,5 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
@@ -51,7 +51,7 @@ describe('profile.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, ProfileComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -178,7 +178,7 @@ describe('profile.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, ProfileComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -306,7 +306,7 @@ describe('profile.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, ProfileComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -435,7 +435,7 @@ describe('profile.component', () => {
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, HttpClientModule, TestHelpComponent, ProfileComponent]
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
