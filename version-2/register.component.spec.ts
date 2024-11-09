@@ -216,13 +216,12 @@ describe('register.component', () => {
     let component: RegisterComponent;
     let fixture: ComponentFixture<RegisterComponent>;
     let overlayContainer: OverlayContainer;
-    let overlayContainerElement: HTMLElement;
     let formGroup: FormGroup;
     let formItems: DebugElement[];
     let buttons: DebugElement[];
 
     function getTooltipTrigger(index: number): Element {
-      return overlayContainerElement.querySelectorAll('.ant-popover-buttons button')[index];
+      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
     }
 
     beforeEach(() => {
@@ -287,7 +286,6 @@ describe('register.component', () => {
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
-        overlayContainerElement = currentOverlayContainer.getContainerElement();
       })
     );
 
@@ -309,7 +307,7 @@ describe('register.component', () => {
       })
     );
 
-    it('should be empty', fakeAsync(() => {
+    it('should click reset button clear all form controls ', fakeAsync(() => {
       tick(200);
       fixture.detectChanges();
       expect(formGroup.get('username')!.value).not.toBe('username1');
@@ -319,20 +317,19 @@ describe('register.component', () => {
     }));
   });
 
-  describe('register button should work', () => {
+  describe('submit button should work', () => {
     let TIMEOUT_INTERVAL: number;
     let component: RegisterComponent;
     let fixture: ComponentFixture<RegisterComponent>;
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
-    let overlayContainerElement: HTMLElement;
     let formGroup: FormGroup;
     let formItems: DebugElement[];
     let buttons: DebugElement[];
 
     function getTooltipTrigger(index: number): Element {
-      return overlayContainerElement.querySelectorAll('.ant-popover-buttons button')[index];
+      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
     }
 
     beforeEach(() => {
@@ -403,7 +400,6 @@ describe('register.component', () => {
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
-        overlayContainerElement = currentOverlayContainer.getContainerElement();
       })
     );
 
@@ -425,7 +421,7 @@ describe('register.component', () => {
       })
     );
 
-    it('should have error', fakeAsync(() => {
+    it('should click submit button return success (not implemented)', fakeAsync(() => {
       tick(200);
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('Register is not implemented yet.');
@@ -438,20 +434,19 @@ describe('register.component', () => {
     }));
   });
 
-  describe('should register return validation error', () => {
+  describe('submit button should return validation error', () => {
     let TIMEOUT_INTERVAL: number;
     let component: RegisterComponent;
     let fixture: ComponentFixture<RegisterComponent>;
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
-    let overlayContainerElement: HTMLElement;
     let formGroup: FormGroup;
     let formItems: DebugElement[];
     let buttons: DebugElement[];
 
     function getTooltipTrigger(index: number): Element {
-      return overlayContainerElement.querySelectorAll('.ant-popover-buttons button')[index];
+      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
     }
 
     beforeEach(() => {
@@ -522,7 +517,6 @@ describe('register.component', () => {
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
-        overlayContainerElement = currentOverlayContainer.getContainerElement();
       })
     );
 
@@ -544,7 +538,7 @@ describe('register.component', () => {
       })
     );
 
-    it('should have error', fakeAsync(() => {
+    it('should click submit button return error', fakeAsync(() => {
       tick(200);
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('The email has been taken.');

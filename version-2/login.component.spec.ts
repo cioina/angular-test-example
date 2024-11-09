@@ -140,7 +140,7 @@ describe('login.component', () => {
     });
   });
 
-  describe('should log on work', () => {
+  describe('submit button should work for valid credentials', () => {
     let TIMEOUT_INTERVAL: number;
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
@@ -210,7 +210,7 @@ describe('login.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should user be logged on', fakeAsync(() => {
+    it('should click submit button authenticate user', fakeAsync(() => {
       tick(200);
       helpFixture.detectChanges();
       expect(helpComponent.errors.length).toBe(0);
@@ -218,7 +218,7 @@ describe('login.component', () => {
     }));
   });
 
-  describe('should have error', () => {
+  describe('submit button should work for invalid credentials', () => {
     let TIMEOUT_INTERVAL: number;
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
@@ -289,7 +289,7 @@ describe('login.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should not user be logged on', fakeAsync(() => {
+    it('should click submit button not authenticate user and return error', fakeAsync(() => {
       tick(200);
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('Invalid credentials.');
