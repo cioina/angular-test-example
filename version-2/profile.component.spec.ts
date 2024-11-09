@@ -24,6 +24,196 @@ import ProfileComponent from './profile.component';
 import { environment } from '../../environments/environment';
 
 describe('profile.component', () => {
+  describe('no profile if user is not authenticated', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should profile be null and user not authenticated', fakeAsync(() => {
+      tick(200);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(component.profile()).not.toBeTruthy();
+    }));
+  });
+
+  describe('has profile if user is authenticated and localStorage.clear()', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      localStorage.clear();
+
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should has profile and user authenticated', fakeAsync(() => {
+      tick(200);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.profile()).toBeTruthy();
+    }));
+  });
+
+  describe('should not activate profile.component when wrong token', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      localStorage.clear();
+      helpComponent.setWrongToken();
+      helpFixture.detectChanges();
+
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(component.profile()).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should profile be null', fakeAsync(() => {
+      tick(200);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.profile()).not.toBeTruthy();
+    }));
+  });
+
   describe('close button should work for drawer Update Account', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ProfileComponent;
@@ -390,8 +580,8 @@ describe('profile.component', () => {
       fixture.detectChanges();
       const overlayContainerElement = overlayContainer.getContainerElement();
       expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
-      const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
-      expect(xButton).toBeTruthy();
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(xButtons.length).toBe(1);
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -619,6 +809,13 @@ export class TestHelpComponent implements OnInit, OnDestroy {
       validators: [this.passwordValidator]
     })
   });
+
+  setWrongToken(): void {
+    this.isLoading.set(true);
+    let user = this.#authStore.selectors.user();
+    user!.token = environment.testRefreshToken;
+    this.#authStore.checkProfile({ loading: this.isLoading, user: user! });
+  }
 
   login(loginData: LoginBodyRequest): void {
     if (this.isLoading()) {
