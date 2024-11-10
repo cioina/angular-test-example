@@ -24,7 +24,7 @@ import ProfileComponent from './profile.component';
 import { environment } from '../../environments/environment';
 
 describe('profile.component', () => {
-  describe('confirm password drawer should open ', () => {
+  describe('confirm password drawer should open on top of drawer Update Account', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ProfileComponent;
     let fixture: ComponentFixture<ProfileComponent>;
@@ -106,6 +106,7 @@ describe('profile.component', () => {
       const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
       expect(typography).toBeTruthy();
       expect(typography?.textContent?.trim()).toBe('Update Account');
+
       helpComponent.setWrongToken();
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
