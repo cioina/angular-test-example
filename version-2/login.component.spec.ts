@@ -211,7 +211,7 @@ describe('login.component', () => {
     });
 
     it('should click submit button authenticate user', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.errors.length).toBe(0);
       expect(helpComponent.isAuthenticated()).toBe(true);
@@ -290,7 +290,7 @@ describe('login.component', () => {
     });
 
     it('should click submit button not authenticate user and return error', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('Invalid credentials.');
       expect(helpComponent.isAuthenticated()).toBe(false);

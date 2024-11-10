@@ -16,7 +16,7 @@ import { TypedFormGroup } from '@app/shared/utils';
 import { provideComponentStore } from '@ngrx/component-store';
 import { NzAvatarComponent } from 'ng-zorro-antd/avatar';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
-import { dispatchMouseEvent } from 'ng-zorro-antd/core/testing';
+import { dispatchMouseEvent, dispatchFakeEvent, typeInElement } from 'ng-zorro-antd/core/testing';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -24,6 +24,204 @@ import ProfileComponent from './profile.component';
 import { environment } from '../../environments/environment';
 
 describe('profile.component', () => {
+  describe('confirm password drawer should open ', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+    let overlayContainer: OverlayContainer;
+
+    function getTooltipTrigger(index: number): Element {
+      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
+    }
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        overlayContainer = currentOverlayContainer;
+      })
+    );
+
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+
+      component.createComponentModal('username');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+
+      fixture.detectChanges();
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).toBe(3);
+      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
+
+      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
+      expect(avatar.classList.contains('ant-avatar')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Update Account');
+      helpComponent.setWrongToken();
+
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(4);
+      dispatchMouseEvent(xButtons[2], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
+      expect(inputs.length).toBe(4);
+      dispatchFakeEvent(inputs[3], 'focusin');
+      fixture.detectChanges();
+      typeInElement(environment.testUserPassword, inputs[3] as HTMLInputElement);
+      fixture.detectChanges();
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(7);
+      dispatchMouseEvent(xButtons[5], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+
+      fixture.detectChanges();
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).toBe(3);
+      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
+
+      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
+      expect(avatar.classList.contains('ant-avatar')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Update Account');
+
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(4);
+      dispatchMouseEvent(xButtons[2], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+        currentOverlayContainer.ngOnDestroy();
+        overlayContainer.ngOnDestroy();
+      })
+    );
+
+    it('should click submit button refresh token and return error', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+      expect(helpComponent.errors[0]).toBe('The user name has been taken.');
+    }));
+  });
+
   describe('no profile if user is not authenticated', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ProfileComponent;
@@ -72,7 +270,7 @@ describe('profile.component', () => {
     });
 
     it('should profile be null and user not authenticated', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(component.profile()).not.toBeTruthy();
@@ -134,7 +332,7 @@ describe('profile.component', () => {
     });
 
     it('should has profile and user authenticated', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.profile()).toBeTruthy();
@@ -207,7 +405,7 @@ describe('profile.component', () => {
     });
 
     it('should profile be null', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.profile()).not.toBeTruthy();
@@ -268,8 +466,7 @@ describe('profile.component', () => {
       fixture.detectChanges();
 
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
 
       component.createComponentModal('username');
       fixture.detectChanges();
@@ -280,8 +477,9 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
 
       fixture.detectChanges();
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
@@ -319,8 +517,7 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -336,7 +533,7 @@ describe('profile.component', () => {
     );
 
     it('should click close button close drawer', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -397,8 +594,7 @@ describe('profile.component', () => {
       fixture.detectChanges();
 
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
 
       component.createComponentModal('username');
       fixture.detectChanges();
@@ -409,8 +605,9 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
 
       fixture.detectChanges();
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
@@ -426,7 +623,7 @@ describe('profile.component', () => {
       expect(typography).toBeTruthy();
       expect(typography?.textContent?.trim()).toBe('Update Account');
 
-      const xButtons = overlayContainerElement.querySelectorAll('.ant-btn');
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       dispatchMouseEvent(xButtons[2], 'click');
       fixture.detectChanges();
@@ -448,8 +645,7 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -465,7 +661,7 @@ describe('profile.component', () => {
     );
 
     it('should click submit button return error', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -527,8 +723,7 @@ describe('profile.component', () => {
       fixture.detectChanges();
 
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
 
       component.createComponentModal('username');
       fixture.detectChanges();
@@ -539,8 +734,9 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
 
       fixture.detectChanges();
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
@@ -556,7 +752,7 @@ describe('profile.component', () => {
       expect(typography).toBeTruthy();
       expect(typography?.textContent?.trim()).toBe('Update Account');
 
-      const xButtons = overlayContainerElement.querySelectorAll('.ant-btn');
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       dispatchMouseEvent(xButtons[3], 'click');
       fixture.detectChanges();
@@ -578,8 +774,7 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(xButtons.length).toBe(1);
       fixture.detectChanges();
@@ -597,7 +792,7 @@ describe('profile.component', () => {
     );
 
     it('should click reset button disable submit button', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -658,8 +853,7 @@ describe('profile.component', () => {
       fixture.detectChanges();
 
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
 
       component.createComponentModal('username');
       fixture.detectChanges();
@@ -670,8 +864,9 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
 
       fixture.detectChanges();
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
@@ -687,7 +882,7 @@ describe('profile.component', () => {
       expect(typography).toBeTruthy();
       expect(typography?.textContent?.trim()).toBe('Update Account');
 
-      const xButtons = overlayContainerElement.querySelectorAll('.ant-btn');
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       dispatchMouseEvent(xButtons[3], 'click');
       fixture.detectChanges();
@@ -709,11 +904,10 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(xButton).toBeTruthy();
-      const xButtons = overlayContainerElement.querySelectorAll('.ant-btn');
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       dispatchMouseEvent(xButtons[0], 'click');
       fixture.detectChanges();
@@ -735,8 +929,7 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(xButton).not.toBeTruthy();
       fixture.detectChanges();
@@ -754,7 +947,7 @@ describe('profile.component', () => {
     );
 
     it('should click undo button enable submit button', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -811,6 +1004,9 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   });
 
   setWrongToken(): void {
+    if (this.isLoading()) {
+      return;
+    }
     this.isLoading.set(true);
     let user = this.#authStore.selectors.user();
     user!.token = environment.testRefreshToken;

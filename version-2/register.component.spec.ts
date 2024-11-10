@@ -308,7 +308,7 @@ describe('register.component', () => {
     );
 
     it('should click reset button clear all form controls ', fakeAsync(() => {
-      tick(200);
+      tick(20);
       fixture.detectChanges();
       expect(formGroup.get('username')!.value).not.toBe('username1');
       expect(formGroup.get('email')!.value).not.toBe('email@server');
@@ -422,7 +422,7 @@ describe('register.component', () => {
     );
 
     it('should click submit button return success (not implemented)', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('Register is not implemented yet.');
 
@@ -539,7 +539,7 @@ describe('register.component', () => {
     );
 
     it('should click submit button return error', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('The email has been taken.');
 

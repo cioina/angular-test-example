@@ -73,8 +73,7 @@ describe('article-listing.component', () => {
       fixture = TestBed.createComponent(ArticleListingComponent);
       component = fixture.componentInstance;
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -94,8 +93,9 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
       expect(buttons.length).not.toBe(0);
       expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
@@ -126,8 +126,7 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -143,7 +142,7 @@ describe('article-listing.component', () => {
     );
 
     it('should click close button close drawer Article Tags', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -202,8 +201,7 @@ describe('article-listing.component', () => {
       fixture = TestBed.createComponent(ArticleListingComponent);
       component = fixture.componentInstance;
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -223,8 +221,9 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
       expect(buttons.length).not.toBe(0);
       expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
@@ -255,8 +254,7 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -272,7 +270,7 @@ describe('article-listing.component', () => {
     );
 
     it('should click close button close drawer New Article', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -331,8 +329,7 @@ describe('article-listing.component', () => {
       fixture = TestBed.createComponent(ArticleListingComponent);
       component = fixture.componentInstance;
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -354,8 +351,9 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
       expect(buttons.length).not.toBe(0);
       expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
@@ -383,7 +381,7 @@ describe('article-listing.component', () => {
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).not.toBeTruthy();
 
-      const xButtons = overlayContainerElement.querySelectorAll('.ant-btn');
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(3);
 
       dispatchMouseEvent(xButtons[1], 'click');
@@ -406,8 +404,7 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -423,7 +420,7 @@ describe('article-listing.component', () => {
     );
 
     it('should click submit button return error', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       fixture.detectChanges();
@@ -489,8 +486,7 @@ describe('article-listing.component', () => {
       fixture = TestBed.createComponent(ArticleListingComponent);
       component = fixture.componentInstance;
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -512,8 +508,9 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
       expect(buttons.length).not.toBe(0);
       expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
@@ -541,7 +538,7 @@ describe('article-listing.component', () => {
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).not.toBeTruthy();
 
-      const xButtons = overlayContainerElement.querySelectorAll('.ant-btn');
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(3);
 
       dispatchMouseEvent(xButtons[2], 'click');
@@ -564,8 +561,7 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
       fixture.detectChanges();
@@ -583,7 +579,7 @@ describe('article-listing.component', () => {
     );
 
     it('should click reset button disable submit button', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -642,8 +638,7 @@ describe('article-listing.component', () => {
       fixture = TestBed.createComponent(ArticleListingComponent);
       component = fixture.componentInstance;
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -665,8 +660,9 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')).toBe(true);
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
       expect(buttons.length).not.toBe(0);
       expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
@@ -686,7 +682,7 @@ describe('article-listing.component', () => {
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).toBeTruthy();
 
-      const xButtons = overlayContainerElement.querySelectorAll('.ant-btn');
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
 
       dispatchMouseEvent(xButtons[0], 'click');
@@ -709,8 +705,7 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      const overlayContainerElement = overlayContainer.getContainerElement();
-      expect(overlayContainerElement.querySelector('.ant-drawer')).toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).not.toBeTruthy();
       fixture.detectChanges();
@@ -728,7 +723,7 @@ describe('article-listing.component', () => {
     );
 
     it('should click undo button enable submit button', fakeAsync(() => {
-      tick(200);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
