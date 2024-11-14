@@ -3,7 +3,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
-import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -107,7 +107,7 @@ describe('profile.component', () => {
       expect(typography).toBeTruthy();
       expect(typography?.textContent?.trim()).toBe('Update Account');
 
-      helpComponent.setWrongToken();
+      helpComponent.setNeedsRefreshToken();
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
@@ -381,7 +381,7 @@ describe('profile.component', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       localStorage.clear();
-      helpComponent.setWrongToken();
+      helpComponent.setNeedsRefreshToken();
       helpFixture.detectChanges();
 
       fixture = TestBed.createComponent(ProfileComponent);
@@ -967,44 +967,16 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private injector = inject(Injector);
   errors: string[] = [];
 
-  readonly MinEmailLength = 3;
-  readonly MaxEmailLength = 50;
-  readonly MinPasswordLength = 16;
-  readonly MaxPasswordLength = 32;
-
-  passwordValidator = (control: AbstractControl): { [s: string]: boolean } => {
-    if (!control.value) {
-      return { error: true, required: true };
-    } else if (control.value.length < this.MinPasswordLength) {
-      return { error: true, min: true };
-    } else if (control.value.length > this.MaxPasswordLength) {
-      return { error: true, max: true };
-    }
-    return {};
-  };
-  emailValidator = (control: AbstractControl): { [s: string]: boolean } => {
-    if (!control.value) {
-      return { error: true, required: true };
-    } else if (control.value.length < this.MinEmailLength) {
-      return { error: true, min: true };
-    } else if (control.value.length > this.MaxEmailLength) {
-      return { error: true, max: true };
-    }
-    return {};
-  };
-
-  readonly loginForm: TypedFormGroup<LoginBodyRequest> = new FormGroup({
+  private readonly loginForm: TypedFormGroup<LoginBodyRequest> = new FormGroup({
     email: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.email, this.emailValidator]
+      nonNullable: true
     }),
     password: new FormControl('', {
-      nonNullable: true,
-      validators: [this.passwordValidator]
+      nonNullable: true
     })
   });
 
-  setWrongToken(): void {
+  setNeedsRefreshToken(): void {
     if (this.isLoading()) {
       return;
     }
