@@ -7,8 +7,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse } from '@app/shared/models';
-import { LoginBodyRequest } from '@app/shared/services';
-import { UpsertArticleBodyRequest } from '@app/shared/services/article.service';
+import { LoginBodyRequest, UpsertArticleBodyRequest, TagBodyRequest } from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
 import { TypedFormGroup } from '@app/shared/utils';
 
@@ -20,7 +19,137 @@ import { ArticleListingStore } from './article-listing.store';
 import { environment } from '../../../environments/environment';
 
 describe('article-listing.store', () => {
-  describe('articleForm validation errors ', () => {
+  describe('tagForm validation errors', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should patchValue return form validation required errors', fakeAsync(() => {
+      tick(20);
+      helpComponent.tagForm.patchValue({ title: '' });
+      helpFixture.detectChanges();
+      const title = helpComponent.tagForm.get('title')!.errors;
+
+      expect(title).toBeTruthy();
+      expect(title!.required).toBeTruthy(true);
+    }));
+
+    it('should patchValue return form validation min errors', fakeAsync(() => {
+      tick(20);
+      helpComponent.tagForm.patchValue({ title: 'a' });
+      helpFixture.detectChanges();
+      const title = helpComponent.tagForm.get('title')!.errors;
+
+      expect(title).toBeTruthy();
+      expect(title!.min).toBeTruthy(true);
+    }));
+  });
+
+  describe('articleForm validation errors', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should patchValue return form validation required errors', fakeAsync(() => {
+      tick(20);
+      helpComponent.articleForm.patchValue({ slug: '', title: '', description: '', published: false });
+      helpFixture.detectChanges();
+      const slug = helpComponent.articleForm.get('slug')!.errors;
+      const title = helpComponent.articleForm.get('title')!.errors;
+      const description = helpComponent.articleForm.get('description')!.errors;
+
+      expect(slug).toBeTruthy();
+      expect(title).toBeTruthy();
+      expect(description).toBeTruthy();
+
+      expect(slug!.required).toBe(true);
+      expect(title!.required).toBeTruthy(true);
+      expect(description!.required).toBeTruthy(true);
+    }));
+
+    it('should patchValue return form validation min errors', fakeAsync(() => {
+      tick(20);
+      helpComponent.articleForm.patchValue({ slug: 'a', title: 'a', description: 'a', published: false });
+      helpFixture.detectChanges();
+      const slug = helpComponent.articleForm.get('slug')!.errors;
+      const title = helpComponent.articleForm.get('title')!.errors;
+      const description = helpComponent.articleForm.get('description')!.errors;
+
+      expect(slug).toBeTruthy();
+      expect(title).toBeTruthy();
+      expect(description).toBeTruthy();
+
+      expect(slug!.min).toBe(true);
+      expect(title!.min).toBeTruthy(true);
+      expect(description!.min).toBeTruthy(true);
+    }));
+  });
+
+  describe('createTag function', () => {
     let TIMEOUT_INTERVAL: number;
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
@@ -48,8 +177,16 @@ describe('article-listing.store', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
 
-      helpComponent.articleForm.patchValue({ slug: 'a', title: 'a', description: 'a', published: false });
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
 
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.createTag({ title: 'ASP.NET Core' });
       helpFixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -60,16 +197,259 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should patchValue return form validation errors', fakeAsync(() => {
+    it('should createTag return validation error', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
-      expect(helpComponent.articleForm.get('slug')!.errors).toBeTruthy();
-      expect(helpComponent.articleForm.get('title')!.errors).toBeTruthy();
-      expect(helpComponent.articleForm.get('description')!.errors).toBeTruthy();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+
+      expect(helpComponent.tagForm.get('title')!.errors).not.toBeTruthy();
+
+      expect(helpComponent.articleListingStoreErrors.length).toBe(1);
+      expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Tag Json Title' must be unique.`);
     }));
   });
 
-  describe('createArticle 1', () => {
+  describe('editTag function', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.editTag(1, { title: 'ASP.NET Core' });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should editTag return validation error', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+
+      expect(helpComponent.tagForm.get('title')!.errors).not.toBeTruthy();
+
+      expect(helpComponent.articleListingStoreErrors.length).toBe(1);
+      expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Tag Json Title' must be unique.`);
+    }));
+  });
+
+  describe('deleteTag function', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.deleteTag(0);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should deleteTag return success with -1', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleListingStoreErrors.length).toBe(0);
+    }));
+  });
+
+  describe('deleteArticle function', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.deleteArticle(0);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should deleteArticle return success with -1', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleListingStoreErrors.length).toBe(0);
+    }));
+  });
+
+  describe('editArticle function', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.editArticle(
+        1,
+        { slug: 'dotnet-core-testing', title: 'title1', description: 'description1', published: false },
+        false
+      );
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should createArticle return validation error', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+
+      expect(helpComponent.articleForm.get('slug')!.errors).not.toBeTruthy();
+      expect(helpComponent.articleForm.get('title')!.errors).not.toBeTruthy();
+      expect(helpComponent.articleForm.get('description')!.errors).not.toBeTruthy();
+
+      expect(helpComponent.articleListingStoreErrors.length).toBe(1);
+      expect(helpComponent.articleListingStoreErrors[0]).toBe(
+        `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
+      );
+    }));
+  });
+
+  describe('createArticle function 1', () => {
     let TIMEOUT_INTERVAL: number;
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
@@ -134,7 +514,7 @@ describe('article-listing.store', () => {
     }));
   });
 
-  describe('createArticle 2', () => {
+  describe('createArticle function 2', () => {
     let TIMEOUT_INTERVAL: number;
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
@@ -303,6 +683,26 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   authStoreErrors: string[] = [];
   articleListingStoreErrors: string[] = [];
 
+  private readonly MinNameLength = 2;
+  private readonly MaxNameLength = 420;
+
+  private readonly nameValidator = (control: AbstractControl): { [s: string]: boolean } => {
+    if (!control.value) {
+      return { error: true, required: true };
+    } else if (control.value.length < this.MinNameLength) {
+      return { error: true, min: true };
+    } else if (control.value.length > this.MaxNameLength) {
+      return { error: true, max: true };
+    }
+    return {};
+  };
+  readonly tagForm: TypedFormGroup<TagBodyRequest> = new FormGroup({
+    title: new FormControl('', {
+      nonNullable: true,
+      validators: [this.nameValidator]
+    })
+  });
+
   private readonly MinTitleLength = 2;
   private readonly MaxTitleLength = 320;
   private readonly MinDescriptionLength = 2;
@@ -346,6 +746,50 @@ export class TestHelpComponent implements OnInit, OnDestroy {
     })
   });
 
+  createTag(tagData: TagBodyRequest): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.tagForm.patchValue(tagData);
+    this.#articleListingStore.createTag({
+      loading: this.isLoading,
+      form: this.tagForm
+    });
+  }
+  editTag(tagId: number, tagData: TagBodyRequest): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.tagForm.patchValue(tagData);
+    this.#articleListingStore.editTag({
+      loading: this.isLoading,
+      form: this.tagForm,
+      tagId: tagId
+    });
+  }
+  deleteTag(id: number): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.#articleListingStore.deleteTag({
+      loading: this.isLoading,
+      tagId: id
+    });
+  }
+
+  deleteArticle(id: number): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.#articleListingStore.deleteArticle({
+      loading: this.isLoading,
+      articleId: id
+    });
+  }
   createArticle(articleData: UpsertArticleBodyRequest, published: boolean): void {
     if (this.isLoading()) {
       return;
@@ -358,7 +802,6 @@ export class TestHelpComponent implements OnInit, OnDestroy {
       published: published
     });
   }
-
   editArticle(articleId: number, articleData: UpsertArticleBodyRequest, published: boolean): void {
     if (this.isLoading()) {
       return;
@@ -381,6 +824,14 @@ export class TestHelpComponent implements OnInit, OnDestroy {
       nonNullable: true
     })
   });
+  login(loginData: LoginBodyRequest): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.loginForm.patchValue(loginData);
+    this.#authStore.login({ loading: this.isLoading, form: this.loginForm });
+  }
 
   setNeedsRefreshToken(): void {
     if (this.isLoading()) {
@@ -390,15 +841,6 @@ export class TestHelpComponent implements OnInit, OnDestroy {
     let user = this.#authStore.selectors.user();
     user!.token = environment.testRefreshToken;
     this.#authStore.checkProfile({ loading: this.isLoading, user: user! });
-  }
-
-  login(loginData: LoginBodyRequest): void {
-    if (this.isLoading()) {
-      return;
-    }
-    this.isLoading.set(true);
-    this.loginForm.patchValue(loginData);
-    this.#authStore.login({ loading: this.isLoading, form: this.loginForm });
   }
 
   ngOnDestroy(): void {
