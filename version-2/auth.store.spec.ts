@@ -5,6 +5,14 @@ import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angul
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
+import {
+  MinUserNameLength,
+  MaxUserNameLength,
+  MinPasswordLength,
+  MaxPasswordLength,
+  MinEmailLength,
+  MaxEmailLength
+} from '@app/shared/constants';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse } from '@app/shared/models';
 import {
@@ -314,6 +322,50 @@ describe('auth.store', () => {
 
       expect(password).toBeTruthy();
       expect(password!.min).toBeTruthy(true);
+    }));
+  });
+
+  describe('setVersionWidthSwitcher', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+      helpFixture.detectChanges();
+
+      helpComponent.setVersionWidthSwitcher();
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should setVersionWidthSwitcher work', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
     }));
   });
 
@@ -632,19 +684,12 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private injector = inject(Injector);
   errors: string[] = [];
 
-  private readonly MinUserNameLength = 2;
-  private readonly MaxUserNameLength = 100;
-  private readonly MinPasswordLength = 16;
-  private readonly MaxPasswordLength = 32;
-  private readonly MinEmailLength = 3;
-  private readonly MaxEmailLength = 50;
-
   private readonly confirmValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinPasswordLength) {
+    } else if (control.value.length < MinPasswordLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxPasswordLength) {
+    } else if (control.value.length > MaxPasswordLength) {
       return { error: true, max: true };
     } else if (control.value !== this.userForm.controls.password.value) {
       return { error: true, confirm: true };
@@ -654,9 +699,9 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private readonly passwordValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinPasswordLength) {
+    } else if (control.value.length < MinPasswordLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxPasswordLength) {
+    } else if (control.value.length > MaxPasswordLength) {
       return { error: true, max: true };
     }
     return {};
@@ -664,9 +709,9 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private readonly nameValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinUserNameLength) {
+    } else if (control.value.length < MinUserNameLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxUserNameLength) {
+    } else if (control.value.length > MaxUserNameLength) {
       return { error: true, max: true };
     }
     return {};
@@ -700,9 +745,9 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private readonly emailValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinEmailLength) {
+    } else if (control.value.length < MinEmailLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxEmailLength) {
+    } else if (control.value.length > MaxEmailLength) {
       return { error: true, max: true };
     }
     return {};
@@ -729,9 +774,9 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private readonly registerValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinPasswordLength) {
+    } else if (control.value.length < MinPasswordLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxPasswordLength) {
+    } else if (control.value.length > MaxPasswordLength) {
       return { error: true, max: true };
     } else if (control.value !== this.registerForm.controls.password.value) {
       return { error: true, confirm: true };
@@ -788,6 +833,18 @@ export class TestHelpComponent implements OnInit, OnDestroy {
     let user = this.#authStore.selectors.user();
     user!.token = environment.testRefreshToken;
     this.#authStore.checkProfile({ loading: this.isLoading, user: user! });
+  }
+
+  setVersionWidthSwitcher(): void {
+    this.#authStore.setVersion('version');
+    this.#authStore.setWidth(200);
+    this.#authStore.setSwitcher(true);
+    this.#authStore.setUrlPath('path');
+    this.#authStore.setIsCompactTheme(true);
+    this.#authStore.setIsNightTheme(true);
+    this.#authStore.setMenuSplitNav([]);
+    this.#authStore.setMenu([]);
+    this.#authStore.getVersion();
   }
 
   ngOnDestroy(): void {

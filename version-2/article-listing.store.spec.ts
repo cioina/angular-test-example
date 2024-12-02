@@ -5,9 +5,22 @@ import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angul
 import { FormControl, FormGroup, AbstractControl } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
+import {
+  MinNameLength,
+  MaxNameLength,
+  MinTitleLength,
+  MaxTitleLength,
+  MinDescriptionLength,
+  MaxDescriptionLength
+} from '@app/shared/constants';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse } from '@app/shared/models';
-import { LoginBodyRequest, UpsertArticleBodyRequest, TagBodyRequest } from '@app/shared/services';
+import {
+  LoginBodyRequest,
+  UpsertArticleBodyRequest,
+  TagBodyRequest,
+  ArticleGlobalQueryParams
+} from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
 import { TypedFormGroup } from '@app/shared/utils';
 
@@ -661,6 +674,732 @@ describe('article-listing.store', () => {
       expect(helpComponent.articleListingStoreErrors[0]).toBe('Please refresh your JWT token');
     }));
   });
+
+  describe('getArticleDetails function 3', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.getArticleDetails(0);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticleDetails return not found error ', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.currentArticle()).not.toBeTruthy();
+      expect(helpComponent.articleListingStoreErrors.length).toBe(1);
+      expect(helpComponent.articleListingStoreErrors[0]).toBe(`Queried object article was not found, Key: 0`);
+    }));
+  });
+
+  describe('getArticleDetails function 2', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.getArticleDetails(1);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticleDetails return null tagList ', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.currentArticle()).toBeTruthy();
+      expect(helpComponent.currentArticle()?.tagList).not.toBeTruthy();
+      expect(helpComponent.articleListingStoreErrors.length).toBe(0);
+    }));
+  });
+
+  describe('getArticleDetails function 1', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      helpComponent.getArticleDetails(2);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticleDetails return tagList ', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.currentArticle()).toBeTruthy();
+      expect(helpComponent.currentArticle()?.tagList.length).not.toBe(0);
+      expect(helpComponent.articleListingStoreErrors.length).toBe(0);
+    }));
+  });
+
+  describe('queryArticle function 1', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: helpComponent.articleListConfig().filters.limit,
+        offset: helpComponent.articleListConfig().filters.offset
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return articles and total', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).not.toBe(0);
+      expect(helpComponent.articleCount()).not.toBe(0);
+    }));
+  });
+
+  describe('queryArticle function 2', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: helpComponent.articleListConfig().filters.limit,
+        offset: 1000
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return zero articles and total', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).toBe(0);
+      expect(helpComponent.articleCount()).not.toBe(0);
+    }));
+  });
+
+  describe('queryArticle function 3', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: 1,
+        offset: helpComponent.articleListConfig().filters.offset
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return one article and total', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).toBe(1);
+      expect(helpComponent.articleCount()).not.toBe(0);
+    }));
+  });
+
+  describe('queryArticle function 4', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: 1000,
+        offset: 1
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return rest articles and total', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).toBe(helpComponent.articleCount() - 1);
+      expect(helpComponent.articleCount()).not.toBe(0);
+    }));
+  });
+
+  describe('queryArticle function 5', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: 1000,
+        offset: 0,
+        tags: [2]
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return one article and one total', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).toBe(1);
+      expect(helpComponent.articleCount()).toBe(1);
+    }));
+  });
+
+  describe('queryArticle function 6', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: 1000,
+        offset: 0,
+        tags: [1]
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return zero articles and zero total', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).toBe(0);
+      expect(helpComponent.articleCount()).toBe(0);
+    }));
+  });
+
+  describe('queryArticle function 7', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: 1000,
+        offset: 0,
+        tags: [2],
+        published: false
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return zero article and zero total', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).toBe(0);
+      expect(helpComponent.articleCount()).toBe(0);
+    }));
+  });
+
+  describe('queryArticle function 8', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getArticles({
+        limit: 1000,
+        offset: 0,
+        tags: [2],
+        published: true,
+        createdAtAsc: false
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return one article and one total descending', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.articleList()?.length).toBe(1);
+      expect(helpComponent.articleCount()).toBe(1);
+    }));
+  });
+
+  describe('getTags function', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      helpComponent.getTags();
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getTags return all tags', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(helpComponent.tagList()?.length).not.toBe(0);
+    }));
+  });
 });
 
 @Component({
@@ -678,20 +1417,18 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   readonly articleList = this.#articleListingStore.selectors.articleList;
   readonly tagList = this.#articleListingStore.selectors.tags;
   readonly articleListingStoreError = this.#articleListingStore.selectors.errorResponse;
+  readonly currentArticle = this.#articleListingStore.selectors.currentArticle;
   readonly isLoading = signal<boolean>(false);
   private injector = inject(Injector);
   authStoreErrors: string[] = [];
   articleListingStoreErrors: string[] = [];
 
-  private readonly MinNameLength = 2;
-  private readonly MaxNameLength = 420;
-
   private readonly nameValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinNameLength) {
+    } else if (control.value.length < MinNameLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxNameLength) {
+    } else if (control.value.length > MaxNameLength) {
       return { error: true, max: true };
     }
     return {};
@@ -703,17 +1440,12 @@ export class TestHelpComponent implements OnInit, OnDestroy {
     })
   });
 
-  private readonly MinTitleLength = 2;
-  private readonly MaxTitleLength = 320;
-  private readonly MinDescriptionLength = 2;
-  private readonly MaxDescriptionLength = 200000;
-
   private readonly titleValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinTitleLength) {
+    } else if (control.value.length < MinTitleLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxTitleLength) {
+    } else if (control.value.length > MaxTitleLength) {
       return { error: true, max: true };
     }
     return {};
@@ -721,9 +1453,9 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private readonly descriptionValidator = (control: AbstractControl): { [s: string]: boolean } => {
     if (!control.value) {
       return { error: true, required: true };
-    } else if (control.value.length < this.MinDescriptionLength) {
+    } else if (control.value.length < MinDescriptionLength) {
       return { error: true, min: true };
-    } else if (control.value.length > this.MaxDescriptionLength) {
+    } else if (control.value.length > MaxDescriptionLength) {
       return { error: true, max: true };
     }
     return {};
@@ -790,6 +1522,16 @@ export class TestHelpComponent implements OnInit, OnDestroy {
       articleId: id
     });
   }
+  getArticleDetails(id: number): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.#articleListingStore.getArticleDetails({
+      loading: this.isLoading,
+      articleId: id
+    });
+  }
   createArticle(articleData: UpsertArticleBodyRequest, published: boolean): void {
     if (this.isLoading()) {
       return;
@@ -814,6 +1556,23 @@ export class TestHelpComponent implements OnInit, OnDestroy {
       articleId: articleId,
       published: published
     });
+  }
+  getArticles(params: ArticleGlobalQueryParams): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.#articleListingStore.queryArticle({
+      loading: this.isLoading,
+      params: params
+    });
+  }
+  getTags(): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.isLoading.set(true);
+    this.#articleListingStore.getTags(this.isLoading);
   }
 
   private readonly loginForm: TypedFormGroup<LoginBodyRequest> = new FormGroup({
