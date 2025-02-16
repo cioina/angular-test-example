@@ -1,3 +1,8 @@
+/**
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
+ */
+
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -23,8 +28,8 @@ import {
 } from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
 import { TypedFormGroup } from '@app/shared/utils';
-
 import { provideComponentStore } from '@ngrx/component-store';
+
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -1403,8 +1408,7 @@ describe('article-listing.store', () => {
 });
 
 @Component({
-  providers: [provideComponentStore(ArticleListingStore)],
-  standalone: true
+  providers: [provideComponentStore(ArticleListingStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
@@ -1597,7 +1601,7 @@ export class TestHelpComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoading.set(true);
-    let user = this.#authStore.selectors.user();
+    const user = this.#authStore.selectors.user();
     user!.token = environment.testRefreshToken;
     this.#authStore.checkProfile({ loading: this.isLoading, user: user! });
   }

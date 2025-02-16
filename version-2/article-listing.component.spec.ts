@@ -1,3 +1,8 @@
+/**
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
+ */
+
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, inject, signal } from '@angular/core';
@@ -10,8 +15,8 @@ import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors'
 import { LoginBodyRequest } from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
 import { TypedFormGroup } from '@app/shared/utils';
-
 import { provideComponentStore } from '@ngrx/component-store';
+
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { dispatchMouseEvent, dispatchFakeEvent, typeInElement } from 'ng-zorro-antd/core/testing';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
@@ -21,6 +26,118 @@ import ArticleListingComponent from './article-listing.component';
 import { environment } from '../../../environments/environment';
 
 describe('article-listing.component', () => {
+  describe('openMessageDrawer', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ArticleListingComponent;
+    let fixture: ComponentFixture<ArticleListingComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+    let overlayContainer: OverlayContainer;
+
+    function getTooltipTrigger(index: number): Element {
+      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
+    }
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        overlayContainer = currentOverlayContainer;
+      })
+    );
+
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ArticleListingComponent);
+      component = fixture.componentInstance;
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      helpComponent.setNeedsRefreshToken();
+      buttons[0].nativeElement.click();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(1);
+      const close = xButtons[0];
+      expect(close.textContent?.trim()).toBe('Close');
+      dispatchMouseEvent(close, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+        currentOverlayContainer.ngOnDestroy();
+        overlayContainer.ngOnDestroy();
+      })
+    );
+
+    it('should click close button work for openMessageDrawer', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+    }));
+  });
+
   describe('confirm password drawer should open on top of drawer Create/Edit Tags', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
@@ -144,11 +261,48 @@ describe('article-listing.component', () => {
       expect(inputs.length).toBe(1);
       dispatchFakeEvent(inputs[0], 'focusin');
       fixture.detectChanges();
+      typeInElement(`${environment.testUserPassword}a`, inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(9);
+      const submitConfirmPassword = xButtons[7];
+      expect(submitConfirmPassword.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submitConfirmPassword, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const messages = overlayContainer
+        .getContainerElement()
+        .querySelectorAll('.ant-typography.ant-typography-danger.ng-star-inserted');
+      expect(messages.length).toBe(5);
+      expect(messages[4].textContent?.trim()).toBe('Invalid credentials.');
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
+      expect(inputs.length).toBe(1);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
       typeInElement(environment.testUserPassword, inputs[0] as HTMLInputElement);
       fixture.detectChanges();
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(9);
-      dispatchMouseEvent(xButtons[7], 'click');
+      const submitConfirmPassword = xButtons[7];
+      expect(submitConfirmPassword.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submitConfirmPassword, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -782,7 +936,9 @@ describe('article-listing.component', () => {
       fixture.detectChanges();
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
-      dispatchMouseEvent(xButtons[4], 'click');
+      const submitConfirmPassword = xButtons[4];
+      expect(submitConfirmPassword.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submitConfirmPassword, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -990,7 +1146,9 @@ describe('article-listing.component', () => {
       fixture.detectChanges();
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(7);
-      dispatchMouseEvent(xButtons[5], 'click');
+      const submitConfirmPassword = xButtons[5];
+      expect(submitConfirmPassword.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submitConfirmPassword, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -1778,9 +1936,7 @@ describe('article-listing.component', () => {
   });
 });
 
-@Component({
-  standalone: true
-})
+@Component({})
 export class TestHelpComponent implements OnDestroy {
   readonly #authStore = inject(AuthStore);
   readonly isAuthenticated = this.#authStore.selectors.isAuthenticated;
@@ -1801,7 +1957,7 @@ export class TestHelpComponent implements OnDestroy {
       return;
     }
     this.isLoading.set(true);
-    let user = this.#authStore.selectors.user();
+    const user = this.#authStore.selectors.user();
     user!.token = environment.testRefreshToken;
     this.#authStore.checkProfile({ loading: this.isLoading, user: user! });
   }

@@ -1,17 +1,20 @@
+/**
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
+ */
+
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
-import { FormControl, FormGroup } from '@angular/forms';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse, Tag } from '@app/shared/models';
-import { LoginBodyRequest, ArticleGlobalQueryParams } from '@app/shared/services';
+import { ArticleGlobalQueryParams } from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
-import { TypedFormGroup } from '@app/shared/utils';
-
 import { provideComponentStore } from '@ngrx/component-store';
+
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -529,8 +532,7 @@ describe('home.store', () => {
 });
 
 @Component({
-  providers: [provideComponentStore(HomeStore)],
-  standalone: true
+  providers: [provideComponentStore(HomeStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
@@ -547,24 +549,6 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private injector = inject(Injector);
   authStoreErrors: string[] = [];
   tagsChanged = false;
-
-  private readonly loginForm: TypedFormGroup<LoginBodyRequest> = new FormGroup({
-    email: new FormControl('', {
-      nonNullable: true
-    }),
-    password: new FormControl('', {
-      nonNullable: true
-    })
-  });
-
-  login(loginData: LoginBodyRequest): void {
-    if (this.isLoading()) {
-      return;
-    }
-    this.isLoading.set(true);
-    this.loginForm.patchValue(loginData);
-    this.#authStore.login({ loading: this.isLoading, form: this.loginForm });
-  }
 
   getArticles(params: ArticleGlobalQueryParams): void {
     if (this.isLoading()) {

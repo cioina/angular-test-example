@@ -1,3 +1,8 @@
+/**
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
+ */
+
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -9,8 +14,8 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse } from '@app/shared/models';
 import { AuthStore } from '@app/shared/store';
-
 import { provideComponentStore } from '@ngrx/component-store';
+
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { NzFormControlComponent, NzFormItemComponent } from 'ng-zorro-antd/form';
@@ -302,9 +307,7 @@ describe('login.component', () => {
   });
 });
 
-@Component({
-  standalone: true
-})
+@Component({})
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
   readonly errorResponse = this.#authStore.selectors.errorResponse;

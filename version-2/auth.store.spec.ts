@@ -1,3 +1,8 @@
+/**
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/LICENSE
+ */
+
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -23,8 +28,8 @@ import {
 } from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
 import { TypedFormGroup } from '@app/shared/utils';
-
 import { provideComponentStore } from '@ngrx/component-store';
+
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -351,7 +356,7 @@ describe('auth.store', () => {
       helpComponent = helpFixture.componentInstance;
       helpFixture.detectChanges();
 
-      helpComponent.setVersionWidthSwitcher();
+      helpComponent.incompleteCoverageTest();
       helpFixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -362,7 +367,7 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should setVersionWidthSwitcher work', fakeAsync(() => {
+    it('should incompleteCoverageTest work', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
@@ -673,9 +678,7 @@ describe('auth.store', () => {
   });
 });
 
-@Component({
-  standalone: true
-})
+@Component({})
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
   readonly errorResponse = this.#authStore.selectors.errorResponse;
@@ -830,21 +833,23 @@ export class TestHelpComponent implements OnInit, OnDestroy {
       return;
     }
     this.isLoading.set(true);
-    let user = this.#authStore.selectors.user();
+    const user = this.#authStore.selectors.user();
     user!.token = environment.testRefreshToken;
     this.#authStore.checkProfile({ loading: this.isLoading, user: user! });
   }
 
-  setVersionWidthSwitcher(): void {
+  incompleteCoverageTest(): void {
     this.#authStore.setVersion('version');
+    this.#authStore.getVersion();
+
     this.#authStore.setWidth(200);
+    this.#authStore.setHeight(200);
     this.#authStore.setSwitcher(true);
     this.#authStore.setUrlPath('path');
     this.#authStore.setIsCompactTheme(true);
     this.#authStore.setIsNightTheme(true);
     this.#authStore.setMenuSplitNav([]);
     this.#authStore.setMenu([]);
-    this.#authStore.getVersion();
   }
 
   ngOnDestroy(): void {
