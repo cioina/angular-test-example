@@ -11,6 +11,7 @@ import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
+import { MinEmailLength, MaxEmailLength, MinPasswordLength, MaxPasswordLength } from '@app/shared/constants';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse } from '@app/shared/models';
 import { AuthStore } from '@app/shared/store';
@@ -223,7 +224,7 @@ describe('login.component', () => {
     }));
   });
 
-  describe('submit button should work for invalid credentials', () => {
+  describe('submit button should work for invalid credentials ', () => {
     let TIMEOUT_INTERVAL: number;
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
@@ -255,6 +256,44 @@ describe('login.component', () => {
       component = fixture.componentInstance;
 
       formGroup = component.loginForm;
+
+      formGroup.get('email')!.markAsDirty();
+      formGroup.get('email')!.setValue('m'.repeat(MinEmailLength - 1));
+      formGroup.get('email')!.updateValueAndValidity();
+
+      formGroup.get('password')!.markAsDirty();
+      formGroup.get('password')!.setValue('m'.repeat(MinPasswordLength - 1));
+      formGroup.get('password')!.updateValueAndValidity();
+
+      fixture.detectChanges();
+
+      const items1 = fixture.debugElement.queryAll(By.directive(NzFormItemComponent));
+      expect(items1.length).toBe(3);
+      expect(items1[0].nativeElement.textContent.trim()).toBe(
+        'Email The input is not a valid email.  The email must be at least 3 characters long.'
+      );
+      expect(items1[1].nativeElement.textContent.trim()).toBe(
+        'Password The password must be at least 16 characters long.'
+      );
+
+      formGroup.get('email')!.markAsDirty();
+      formGroup.get('email')!.setValue('m'.repeat(MaxEmailLength + 1));
+      formGroup.get('email')!.updateValueAndValidity();
+
+      formGroup.get('password')!.markAsDirty();
+      formGroup.get('password')!.setValue('m'.repeat(MaxPasswordLength + 1));
+      formGroup.get('password')!.updateValueAndValidity();
+
+      fixture.detectChanges();
+
+      const items = fixture.debugElement.queryAll(By.directive(NzFormItemComponent));
+      expect(items.length).toBe(3);
+      expect(items[0].nativeElement.textContent.trim()).toBe(
+        'Email The input is not a valid email.  The email must be at most 50 characters long.'
+      );
+      expect(items[1].nativeElement.textContent.trim()).toBe(
+        'Password The password must be at most 32 characters long.'
+      );
 
       formGroup.get('email')!.markAsDirty();
       formGroup.get('email')!.setValue('incorrect@user');

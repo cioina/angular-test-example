@@ -12,6 +12,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
+import { MinUserNameLength, MaxUserNameLength, MinPasswordLength, MaxPasswordLength } from '@app/shared/constants';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse } from '@app/shared/models';
 import { LoginBodyRequest } from '@app/shared/services';
@@ -36,10 +37,6 @@ describe('profile.component', () => {
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
-
-    //function getTooltipTrigger(index: number): Element {
-    //  return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    //}
 
     beforeEach(() => {
       localStorage.clear();
@@ -118,14 +115,14 @@ describe('profile.component', () => {
       const password = inputs[1];
       dispatchFakeEvent(password, 'focusin');
       fixture.detectChanges();
-      typeInElement('m', password as HTMLInputElement);
+      typeInElement('m'.repeat(MinPasswordLength - 1), password as HTMLInputElement);
       fixture.detectChanges();
 
       expect(inputs[2].id.trim()).toBe('confirm');
       const confirm = inputs[2];
       dispatchFakeEvent(confirm, 'focusin');
       fixture.detectChanges();
-      typeInElement('m', confirm as HTMLInputElement);
+      typeInElement('m'.repeat(MinPasswordLength - 1), confirm as HTMLInputElement);
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -139,69 +136,41 @@ describe('profile.component', () => {
       expect(errors[0].textContent?.trim()).toBe('The password must be at least 16 characters long.');
       expect(errors[1].textContent?.trim()).toBe('The password must be at least 16 characters long.');
 
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
+      expect(inputs.length).toBe(3);
+      expect(inputs[1].id.trim()).toBe('password');
+      const password = inputs[1];
+      dispatchFakeEvent(password, 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxPasswordLength + 1), password as HTMLInputElement);
+      fixture.detectChanges();
 
-      //  fixture.detectChanges();
-      //  const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      //  expect(buttons.length).toBe(3);
-      //  expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      //  expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      //  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      //  const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      //  expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      //  const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      //  expect(typography).toBeTruthy();
-      //  expect(typography?.textContent?.trim()).toBe('Update Account');
-
-      //  const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
-      //  expect(inputs.length).toBe(3);
-      //  expect(inputs[1].id.trim()).toBe('password');
-      //  const password = inputs[1];
-      //  dispatchFakeEvent(password, 'focusin');
-      //  fixture.detectChanges();
-      //  typeInElement('123456789123456789', password as HTMLInputElement);
-      //  fixture.detectChanges();
-
-      //  expect(inputs[2].id.trim()).toBe('confirm');
-      //  const confirm = inputs[2];
-      //  dispatchFakeEvent(confirm, 'focusin');
-      //  fixture.detectChanges();
-      //  typeInElement('123456789123456789', confirm as HTMLInputElement);
-      //  fixture.detectChanges();
-
-      //  const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
-      //  expect(xButtons.length).toBe(4);
-      //  const submitProfile = xButtons[2];
-      //  dispatchMouseEvent(submitProfile, 'click');
+      expect(inputs[2].id.trim()).toBe('confirm');
+      const confirm = inputs[2];
+      dispatchFakeEvent(confirm, 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxPasswordLength + 1), confirm as HTMLInputElement);
       fixture.detectChanges();
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
     });
 
-    //beforeEach(waitForAsync(() => {
-    //  fixture.detectChanges();
-    //  expect(getTooltipTrigger(0).textContent).toContain('No');
-    //  expect(getTooltipTrigger(1).textContent).toContain('Yes');
-    //  dispatchMouseEvent(getTooltipTrigger(1), 'click');
-    //  fixture.detectChanges();
-    //}));
-    //beforeEach(async () => {
-    //  await fixture.whenRenderingDone();
-    //});
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
+      expect(errors.length).toBe(2);
+      expect(errors[0].textContent?.trim()).toBe('The password must be at most 32 characters long.');
+      expect(errors[1].textContent?.trim()).toBe('The password must be at most 32 characters long.');
 
-    //beforeEach(waitForAsync(() => {
-    //  fixture.detectChanges();
-    //  expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
-    //  fixture.detectChanges();
-    //}));
-    //beforeEach(async () => {
-    //  await fixture.whenRenderingDone();
-    //});
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
 
     afterEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
@@ -216,10 +185,6 @@ describe('profile.component', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-      //  expect(helpComponent.errors[0]).toBe('Passwords must have at least one non alphanumeric character.');
-      //  expect(helpComponent.errors[1]).toBe(`Passwords must have at least one lowercase ('a'-'z').`);
-      //  expect(helpComponent.errors[2]).toBe(`Passwords must have at least one uppercase ('A'-'Z').`);
-      //  expect(helpComponent.errors[3]).toBe('The old password was deleted. You must provide a new password.');
     }));
   });
 
@@ -378,7 +343,7 @@ describe('profile.component', () => {
       expect(inputs.length).toBe(4);
       dispatchFakeEvent(inputs[3], 'focusin');
       fixture.detectChanges();
-      typeInElement('m', inputs[3] as HTMLInputElement);
+      typeInElement('m'.repeat(MinPasswordLength - 1), inputs[3] as HTMLInputElement);
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -390,6 +355,23 @@ describe('profile.component', () => {
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The password must be at least 16 characters long.');
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
+      expect(inputs.length).toBe(4);
+      dispatchFakeEvent(inputs[3], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxPasswordLength + 1), inputs[3] as HTMLInputElement);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
+      expect(errors.length).toBe(1);
+      expect(errors[0].textContent?.trim()).toBe('The password must be at most 32 characters long.');
 
       const buttons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(buttons.length).toBe(1);
@@ -1114,7 +1096,7 @@ describe('profile.component', () => {
       const username = inputs[0];
       dispatchFakeEvent(username, 'focusin');
       fixture.detectChanges();
-      typeInElement('m', username as HTMLInputElement);
+      typeInElement('m'.repeat(MinUserNameLength - 1), username as HTMLInputElement);
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -1126,6 +1108,25 @@ describe('profile.component', () => {
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The username must be at least 2 characters long.');
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
+      expect(inputs.length).toBe(3);
+      expect(inputs[0].id.trim()).toBe('username');
+      const username = inputs[0];
+      dispatchFakeEvent(username, 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxUserNameLength + 1), username as HTMLInputElement);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
+      expect(errors.length).toBe(1);
+      expect(errors[0].textContent?.trim()).toBe('The username must be at most 100 characters long.');
 
       expect(
         overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')

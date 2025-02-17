@@ -11,6 +11,14 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
+import {
+  MinNameLength,
+  MaxNameLength,
+  MinTitleLength,
+  MaxTitleLength,
+  MinDescriptionLength,
+  MaxDescriptionLength
+} from '@app/shared/constants';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { LoginBodyRequest } from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
@@ -41,7 +49,7 @@ describe('article-listing.component', () => {
     beforeEach(() => {
       localStorage.clear();
       TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 19000;
     });
 
     beforeEach(waitForAsync(() => {
@@ -212,6 +220,47 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
+      expect(inputs.length).toBe(1);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MinNameLength - 1), inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
+      expect(errors.length).toBe(1);
+      expect(errors[0].textContent?.trim()).toBe('The tag name must be at least 2 characters long.');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
+      expect(inputs.length).toBe(1);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxNameLength + 1), inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
+      expect(errors.length).toBe(1);
+      expect(errors[0].textContent?.trim()).toBe('The tag name must be at most 420 characters long.');
+
       expect(
         overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
       ).toBe(true);
@@ -1556,6 +1605,69 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
+      expect(inputs.length).toBe(3);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MinTitleLength - 1), inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+      dispatchFakeEvent(inputs[1], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MinTitleLength - 1), inputs[1] as HTMLInputElement);
+      fixture.detectChanges();
+      dispatchFakeEvent(inputs[2], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MinDescriptionLength - 1), inputs[2] as HTMLInputElement);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
+      expect(errors.length).toBe(3);
+      expect(errors[0].textContent?.trim()).toBe('The slug must be at least 2 characters long.');
+      expect(errors[1].textContent?.trim()).toBe('The title must be at least 2 characters long.');
+      expect(errors[2].textContent?.trim()).toBe('The description must be at least 2 characters long.');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
+      expect(inputs.length).toBe(3);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxTitleLength + 1), inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+      dispatchFakeEvent(inputs[1], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxTitleLength + 1), inputs[1] as HTMLInputElement);
+      fixture.detectChanges();
+      dispatchFakeEvent(inputs[2], 'focusin');
+      fixture.detectChanges();
+      typeInElement('m'.repeat(MaxDescriptionLength + 1), inputs[2] as HTMLInputElement);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
+      expect(errors.length).toBe(3);
+      expect(errors[0].textContent?.trim()).toBe('The slug must be at most 320 characters long.');
+      expect(errors[1].textContent?.trim()).toBe('The title must be at most 320 characters long.');
+      expect(errors[2].textContent?.trim()).toBe('The description must be at most 200000 characters long.');
+
       expect(
         overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
       ).toBe(true);
