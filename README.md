@@ -5,7 +5,7 @@
 ## Introduction
 
 [Our Angular app](https://cioina.azurewebsites.net/) Is based on [ng-antd-admin](https://github.com/huajian123/ng-antd-admin) combined with [angular-conduit-signals](https://github.com/AndyT2503/angular-conduit-signals). In addition, we use following Angular libraries direct form sources: [NG-ZORRO components src](https://github.com/NG-ZORRO/ng-zorro-antd/tree/master/components), [icons-angular src](https://github.com/ant-design/ant-design-icons/tree/master/packages/icons-angular/src) and [component-store src](https://github.com/ngrx/platform/tree/main/modules/component-store/src) with some minor changes. All our reactive states look similar to [auth.store.ts](https://github.com/AndyT2503/angular-conduit-signals/blob/dev/src/app/shared/store/auth.store.ts)
-The app communicates with the server via REST API controllers built on top of .NET Core 8. The compiled bin code is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net8.0) together with [compiled Angular app](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net8.0/wwwroot)
+The app communicates with the server via REST API controllers built on top of .NET Core 9. The compiled bin code is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net9.0) together with [compiled Angular app](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net9.0/wwwroot)
 
 ## Testing tools for Angular
 
@@ -20,7 +20,7 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 ## Testing Angular app together with .NET Core app
 
 Our actual(up to date) [test project](https://github.com/cioina/MyTested-test-project-example/tree/main/src/BlogAngular.Test/Test) for our .NET Core app uses in memory database which is very convenient for testing (read more about it [here](https://cioina.azurewebsites.net/articles/dotnet-core-testing) ) Next, would be great to test on a real database. So, all our Angular test from [our GitHub repository](https://github.com/cioina/angular-test-example/tree/main/version-2) will connect with our .NET Core app which is connected to real MS SQL database. Therefore, it represents a type of integration test.
-All the files ending in [*.store.spec.ts](https://github.com/cioina/angular-test-example/blob/main/version-2/home.store.spec.ts) can be considered as real API testing which is an alternative to [Newman](https://github.com/gothinkster/realworld/blob/main/api/run-api-tests.sh) or [cypress]( https://github.com/cypress-io/cypress-example-conduit-app/blob/master/cypress/integration/login-spec.js)
+All the files ending in [*.store.spec.ts](https://github.com/cioina/angular-test-example/blob/main/version-2/home.store.spec.ts) can be considered as real API testing which is an alternative to [Newman](https://github.com/gothinkster/realworld/blob/main/api/run-api-tests.sh) or [cypress 1](https://github.com/cypress-io/cypress-example-conduit-app/blob/master/cypress/integration/login-spec.js) [cypress 2](https://github.com/stefanoslig/angular-ngrx-nx-realworld-example-app/blob/main/apps/conduit-e2e/src/e2e/login/login.ts)
 
 ## Using Signal type in Angular together with Reactive State library
 
@@ -35,3 +35,4 @@ Before Signal type became native in Angular, we used [Reactive State library]( h
 - [hua jian](https://github.com/huajian123)
 - [Andy Tu Hoang](https://github.com/AndyT2503)
 - [Stefanos Lignos](https://github.com/stefanoslig)
+
