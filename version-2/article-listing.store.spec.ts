@@ -791,7 +791,7 @@ describe('article-listing.store', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.currentArticle()).toBeTruthy();
-      expect(helpComponent.currentArticle()?.tagList).not.toBeTruthy();
+      expect(helpComponent.currentArticle()?.tagList.length).toBeTruthy(1);
       expect(helpComponent.articleListingStoreErrors.length).toBe(0);
     }));
   });
@@ -1139,7 +1139,7 @@ describe('article-listing.store', () => {
       helpComponent.getArticles({
         limit: 1000,
         offset: 0,
-        tags: [2]
+        tags: [3]
       });
       helpFixture.detectChanges();
     }));
@@ -1151,12 +1151,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and one total', fakeAsync(() => {
+    it('should getArticles return 2 articles and total equals 2', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
-      expect(helpComponent.articleList()?.length).toBe(1);
-      expect(helpComponent.articleCount()).toBe(1);
+      expect(helpComponent.articleList()?.length).toBe(2);
+      expect(helpComponent.articleCount()).toBe(2);
     }));
   });
 
@@ -1213,12 +1213,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return zero articles and zero total', fakeAsync(() => {
+    it('should getArticles return one article and total equals one', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
-      expect(helpComponent.articleList()?.length).toBe(0);
-      expect(helpComponent.articleCount()).toBe(0);
+      expect(helpComponent.articleList()?.length).toBe(1);
+      expect(helpComponent.articleCount()).toBe(1);
     }));
   });
 
@@ -1263,7 +1263,7 @@ describe('article-listing.store', () => {
       helpComponent.getArticles({
         limit: 1000,
         offset: 0,
-        tags: [2],
+        tags: [3],
         published: false
       });
       helpFixture.detectChanges();
@@ -1326,7 +1326,7 @@ describe('article-listing.store', () => {
       helpComponent.getArticles({
         limit: 1000,
         offset: 0,
-        tags: [2],
+        tags: [3],
         published: true,
         createdAtAsc: false
       });
@@ -1340,12 +1340,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and one total descending', fakeAsync(() => {
+    it('should getArticles return 2 articles and total equals 2 descending', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
-      expect(helpComponent.articleList()?.length).toBe(1);
-      expect(helpComponent.articleCount()).toBe(1);
+      expect(helpComponent.articleList()?.length).toBe(2);
+      expect(helpComponent.articleCount()).toBe(2);
     }));
   });
 

@@ -10,7 +10,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angul
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
-import { ErrorResponse, Tag } from '@app/shared/models';
+import { ErrorResponse, Tag, TagFilter } from '@app/shared/models';
 import { ArticleGlobalQueryParams } from '@app/shared/services';
 import { AuthStore } from '@app/shared/store';
 import { provideComponentStore } from '@ngrx/component-store';
@@ -251,7 +251,7 @@ describe('home.store', () => {
       helpComponent.getArticles({
         limit: 1000,
         offset: 0,
-        tags: [2]
+        tags: [3]
       });
       helpFixture.detectChanges();
     }));
@@ -263,12 +263,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and one total', fakeAsync(() => {
+    it('should getArticles return 2 articles and total equals 2', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
-      expect(helpComponent.articleList()?.length).toBe(1);
-      expect(helpComponent.articleCount()).toBe(1);
+      expect(helpComponent.articleList()?.length).toBe(2);
+      expect(helpComponent.articleCount()).toBe(2);
     }));
   });
 
@@ -314,7 +314,7 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return zero articles and zero total', fakeAsync(() => {
+    it('should getArticles return zero articles and total equals zero', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
@@ -353,7 +353,7 @@ describe('home.store', () => {
       helpComponent.getArticles({
         limit: 1000,
         offset: 0,
-        tags: [2],
+        tags: [3],
         published: false
       });
       helpFixture.detectChanges();
@@ -366,12 +366,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and one total and ignore published', fakeAsync(() => {
+    it('should getArticles return 2 articles and total equals 2 and ignore published', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
-      expect(helpComponent.articleList()?.length).toBe(1);
-      expect(helpComponent.articleCount()).toBe(1);
+      expect(helpComponent.articleList()?.length).toBe(2);
+      expect(helpComponent.articleCount()).toBe(2);
     }));
   });
 
@@ -405,7 +405,7 @@ describe('home.store', () => {
       helpComponent.getArticles({
         limit: 1000,
         offset: 0,
-        tags: [2],
+        tags: [3],
         published: false,
         createdAtAsc: false
       });
@@ -419,16 +419,16 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and one total descending', fakeAsync(() => {
+    it('should getArticles return 2 article and total eqiuals 2 descending', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
-      expect(helpComponent.articleList()?.length).toBe(1);
-      expect(helpComponent.articleCount()).toBe(1);
+      expect(helpComponent.articleList()?.length).toBe(2);
+      expect(helpComponent.articleCount()).toBe(2);
     }));
   });
 
-  describe('getTags function', () => {
+  describe('queryArticle function 9', () => {
     let TIMEOUT_INTERVAL: number;
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
@@ -455,7 +455,195 @@ describe('home.store', () => {
 
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
-      helpComponent.getTags();
+      helpComponent.getArticles({
+        limit: -1,
+        offset: -1
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return error', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(helpComponent.articleList()?.length).toBe(0);
+      expect(helpComponent.articleCount()).toBe(0);
+    }));
+  });
+
+  describe('getTags function 1', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpComponent.getTags({ limit: 1, offset: 0 });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getTags return one tag', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(helpComponent.tags()?.length).toBe(1);
+    }));
+  });
+
+  describe('getTags function 2', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpComponent.getTags({ limit: 1, offset: 1000 });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getTags return no tags', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(helpComponent.tags()?.length).toBe(0);
+    }));
+  });
+
+  describe('getTags function 3', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpComponent.getTags({ limit: -1, offset: -1 });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getTags return error', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(helpComponent.tags()?.length).toBe(0);
+    }));
+  });
+
+  describe('getTags function 4', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpComponent.getTags(null);
       helpFixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -501,7 +689,7 @@ describe('home.store', () => {
 
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
-      helpComponent.getTags();
+      helpComponent.getTags(null);
       helpFixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -511,7 +699,7 @@ describe('home.store', () => {
     beforeEach(waitForAsync(() => {
       helpFixture.detectChanges();
       helpComponent.tagsChanged = false;
-      helpComponent.getTags();
+      helpComponent.getTags(null);
       helpFixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -561,12 +749,15 @@ export class TestHelpComponent implements OnInit, OnDestroy {
     });
   }
 
-  getTags(): void {
+  getTags(params: TagFilter | null): void {
     if (this.isLoading()) {
       return;
     }
     this.isLoading.set(true);
-    this.#homeStore.getTags(this.isLoading);
+    this.#homeStore.getTags({
+      loading: this.isLoading,
+      params: params
+    });
   }
 
   ngOnDestroy(): void {

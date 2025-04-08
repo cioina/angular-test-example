@@ -139,7 +139,7 @@ describe('article-listing.component', () => {
     );
 
     it('should click close button work for openMessageDrawer', fakeAsync(() => {
-      tick(20);
+      tick(5000);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -436,6 +436,897 @@ describe('article-listing.component', () => {
     }));
   });
 
+  describe('close button should work for drawer Article Tags', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ArticleListingComponent;
+    let fixture: ComponentFixture<ArticleListingComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+    let overlayContainer: OverlayContainer;
+
+    function getTooltipTrigger(index: number): Element {
+      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
+    }
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        overlayContainer = currentOverlayContainer;
+      })
+    );
+
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ArticleListingComponent);
+      component = fixture.componentInstance;
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      buttons[1].nativeElement.click();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+
+      const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn-dangerous');
+      expect(xButton).toBeTruthy();
+      expect(xButton!.textContent?.trim()).toBe('Close');
+      dispatchMouseEvent(xButton!, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+        currentOverlayContainer.ngOnDestroy();
+        overlayContainer.ngOnDestroy();
+      })
+    );
+
+    it('should click close button close drawer Article Tags', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+    }));
+  });
+
+  describe('tag filter should work for drawer Article Tags', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ArticleListingComponent;
+    let fixture: ComponentFixture<ArticleListingComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+    let overlayContainer: OverlayContainer;
+
+    function getTooltipTrigger(index: number): Element {
+      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
+    }
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        overlayContainer = currentOverlayContainer;
+      })
+    );
+
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ArticleListingComponent);
+      component = fixture.componentInstance;
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(component.articleList().length).not.toBe(0);
+      expect(component.tagList().length).not.toBe(0);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      buttons[1].nativeElement.click();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(2);
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+
+      const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
+      expect(transferList.length).not.toBe(0);
+      dispatchMouseEvent(transferList[0], 'click');
+      dispatchMouseEvent(transferList[1], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(1);
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+
+      const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
+      expect(switches.length).toBe(2);
+      const old = switches[0];
+      expect(old.textContent?.trim()).toBe('Newest first');
+      dispatchMouseEvent(old, 'click');
+      fixture.detectChanges();
+
+      const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
+      expect(transfer.length).toBe(2);
+      dispatchMouseEvent(transfer[0], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(3);
+
+      const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
+      expect(switches.length).toBe(2);
+      const old = switches[0];
+      expect(old.textContent?.trim()).toBe('Oldest first');
+      dispatchMouseEvent(old, 'click');
+      fixture.detectChanges();
+
+      const search = switches[1];
+      expect(search.textContent?.trim()).toBe('Show Search');
+      dispatchMouseEvent(search, 'click');
+      fixture.detectChanges();
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
+      expect(inputs.length).toBe(2);
+      dispatchFakeEvent(inputs[1], 'focusin');
+      fixture.detectChanges();
+      typeInElement('Angular', inputs[1] as HTMLInputElement);
+      fixture.detectChanges();
+
+      const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
+      expect(transferList.length).not.toBe(0);
+      dispatchMouseEvent(transferList[transferList.length - 1], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(3);
+
+      const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
+      expect(switches.length).toBe(2);
+      const search = switches[1];
+      expect(search.textContent?.trim()).toBe('Hide Search');
+
+      const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
+      expect(transfer.length).toBe(2);
+      dispatchMouseEvent(transfer[1], 'click');
+      fixture.detectChanges();
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+      const sel = selects[1];
+      expect(sel.textContent?.trim()).toBe('Sort Order...');
+      dispatchMouseEvent(sel, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(3);
+
+      const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
+      expect(optionItems.length).toBe(2);
+      const item = optionItems[0];
+      expect(item.textContent?.trim()).toBe('Ascending');
+      dispatchMouseEvent(item, 'click');
+      fixture.detectChanges();
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+      const sel = selects[2];
+      expect(sel.textContent?.trim()).toBe('Sort Order...');
+      dispatchMouseEvent(sel, 'click');
+      fixture.detectChanges();
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
+      expect(inputs.length).toBe(2);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
+      typeInElement('Angular', inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(3);
+
+      const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
+      expect(optionItems.length).toBe(2);
+      const item = optionItems[1];
+      expect(item.textContent?.trim()).toBe('Descending');
+      dispatchMouseEvent(item, 'click');
+      fixture.detectChanges();
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+      const sel = selects[0];
+      expect(sel.textContent?.trim()).toBe('All - Published/Unpublished');
+      dispatchMouseEvent(sel, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(3);
+
+      const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
+      expect(optionItems.length).toBe(3);
+      const item = optionItems[1];
+      expect(item.textContent?.trim()).toBe('Published');
+      dispatchMouseEvent(item, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Article Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(3);
+
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(4);
+      const newTag = xButtons[0];
+      expect(newTag.textContent?.trim()).toBe('Apply');
+      dispatchMouseEvent(newTag, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+        currentOverlayContainer.ngOnDestroy();
+        overlayContainer.ngOnDestroy();
+      })
+    );
+
+    it('should click link/edit tags button work', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+    }));
+  });
+
+  describe('edit existing tag should work for drawer Create/Edit Tags', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ArticleListingComponent;
+    let fixture: ComponentFixture<ArticleListingComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+    let overlayContainer: OverlayContainer;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+
+      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        overlayContainer = currentOverlayContainer;
+      })
+    );
+
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ArticleListingComponent);
+      component = fixture.componentInstance;
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(component.articleList().length).not.toBe(0);
+      expect(component.tagList().length).not.toBe(0);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      buttons[4].nativeElement.click();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(4);
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(2);
+
+      const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
+      expect(transferList.length).not.toBe(0);
+      dispatchMouseEvent(transferList[1], 'click');
+      fixture.detectChanges();
+
+      const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
+      expect(transfer.length).toBe(2);
+      dispatchMouseEvent(transfer[1], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(3);
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(2);
+
+      const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
+      expect(switches.length).toBe(2);
+      const editTag = switches[0];
+      expect(editTag.textContent?.trim()).toBe('Enable Edit');
+      dispatchMouseEvent(editTag, 'click');
+      fixture.detectChanges();
+
+      const search = switches[1];
+      expect(search.textContent?.trim()).toBe('Show Search');
+      dispatchMouseEvent(search, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(4);
+
+      const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
+      expect(switches.length).toBe(2);
+      const editTag = switches[0];
+      expect(editTag.textContent?.trim()).toBe('Disable Edit');
+      const search = switches[1];
+      expect(search.textContent?.trim()).toBe('Hide Search');
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+      const sel = selects[0];
+      expect(sel.textContent?.trim()).toBe('Edit Tag');
+      dispatchMouseEvent(sel, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(4);
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
+      expect(inputs.length).toBe(2);
+      dispatchFakeEvent(inputs[1], 'focusin');
+      fixture.detectChanges();
+      typeInElement('Angular', inputs[1] as HTMLInputElement);
+      fixture.detectChanges();
+
+      const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
+      expect(optionItems.length).toBe(1);
+      const item = optionItems[0];
+      expect(item.textContent?.trim()).toBe('Angular');
+      dispatchMouseEvent(item, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(2);
+
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(7);
+      const newTag = xButtons[3];
+      expect(newTag.textContent?.trim()).toBe('Change Tag');
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+      const sel = selects[1];
+      expect(sel.textContent?.trim()).toBe('Sort Order...');
+      dispatchMouseEvent(sel, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(2);
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
+      expect(inputs.length).toBe(2);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
+      typeInElement('Angular', inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+
+      const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
+      expect(optionItems.length).toBe(2);
+      const item = optionItems[0];
+      expect(item.textContent?.trim()).toBe('Ascending');
+      dispatchMouseEvent(item, 'click');
+      fixture.detectChanges();
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+      const sel = selects[2];
+      expect(sel.textContent?.trim()).toBe('Sort Order...');
+      dispatchMouseEvent(sel, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(2);
+
+      const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
+      expect(inputs.length).toBe(1);
+      dispatchFakeEvent(inputs[0], 'focusin');
+      fixture.detectChanges();
+      typeInElement('ASP.NET Core', inputs[0] as HTMLInputElement);
+      fixture.detectChanges();
+
+      const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
+      expect(optionItems.length).toBe(2);
+      const item = optionItems[1];
+      expect(item.textContent?.trim()).toBe('Descending');
+      dispatchMouseEvent(item, 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(2);
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(3);
+
+      const thead = overlayContainer.getContainerElement().querySelectorAll('.ant-table-thead');
+      expect(thead.length).toBe(2);
+      const checkbox = thead[1];
+      expect(checkbox.textContent?.trim()).toBe('All');
+
+      const cells = overlayContainer.getContainerElement().querySelectorAll('.ant-table-cell');
+      expect(cells.length).not.toBe(0);
+      const cell = cells[cells.length - 1];
+      expect(cell.textContent?.trim()).toBe('Angular');
+
+      const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
+      expect(transferList.length).not.toBe(0);
+      dispatchMouseEvent(transferList[transferList.length - 1], 'click');
+      fixture.detectChanges();
+
+      const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
+      expect(transfer.length).toBe(2);
+      dispatchMouseEvent(transfer[0], 'click');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+      expect(disabledButtons.length).toBe(4);
+
+      const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
+      expect(selects.length).toBe(2);
+
+      const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
+      expect(switches.length).toBe(2);
+      const editTag = switches[0];
+      expect(editTag.textContent?.trim()).toBe('Enable Edit');
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(
+      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+        currentOverlayContainer.ngOnDestroy();
+        overlayContainer.ngOnDestroy();
+      })
+    );
+
+    it('should click link/edit tags button work', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(component.user()?.email).toBe(environment.testUserEmail);
+    }));
+  });
+
   describe('new tag button should work for drawer Create/Edit Tags', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
@@ -532,8 +1423,9 @@ describe('article-listing.component', () => {
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
-
-      dispatchMouseEvent(xButtons[2], 'click');
+      const newTag = xButtons[2];
+      expect(newTag.textContent?.trim()).toBe('New Tag');
+      dispatchMouseEvent(newTag, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -671,8 +1563,9 @@ describe('article-listing.component', () => {
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
-
-      dispatchMouseEvent(xButtons[1], 'click');
+      const close = xButtons[1];
+      expect(close.textContent?.trim()).toBe('Close');
+      dispatchMouseEvent(close, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -804,8 +1697,9 @@ describe('article-listing.component', () => {
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
-
-      dispatchMouseEvent(xButtons[0], 'click');
+      const apply = xButtons[0];
+      expect(apply.textContent?.trim()).toBe('Apply');
+      dispatchMouseEvent(apply, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -1275,134 +2169,6 @@ describe('article-listing.component', () => {
     }));
   });
 
-  describe('close button should work for drawer Article Tags', () => {
-    let TIMEOUT_INTERVAL: number;
-    let component: ArticleListingComponent;
-    let fixture: ComponentFixture<ArticleListingComponent>;
-    let helpComponent: TestHelpComponent;
-    let helpFixture: ComponentFixture<TestHelpComponent>;
-    let overlayContainer: OverlayContainer;
-
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
-
-    beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
-    });
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await helpFixture.whenRenderingDone();
-    });
-
-    beforeEach(
-      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
-        overlayContainer = currentOverlayContainer;
-      })
-    );
-
-    beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      buttons[1].nativeElement.click();
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
-
-      const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn-dangerous');
-      expect(xButton).toBeTruthy();
-      dispatchMouseEvent(xButton!, 'click');
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    afterEach(
-      testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
-        currentOverlayContainer.ngOnDestroy();
-        overlayContainer.ngOnDestroy();
-      })
-    );
-
-    it('should click close button close drawer Article Tags', fakeAsync(() => {
-      tick(20);
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(true);
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
-  });
-
   describe('close button should work for drawer New Article', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
@@ -1531,7 +2297,7 @@ describe('article-listing.component', () => {
     }));
   });
 
-  describe('submit button should work for drawer New Article', () => {
+  describe('submit button should work for drawer New Article ', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
     let fixture: ComponentFixture<ArticleListingComponent>;
@@ -1722,6 +2488,42 @@ describe('article-listing.component', () => {
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(
+        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+      ).toBe(true);
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).not.toBe(0);
+      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+      expect(typography).toBeTruthy();
+      expect(typography?.textContent?.trim()).toBe('New Article');
+
+      const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
+      expect(xButtons.length).toBe(3);
+      const close = xButtons[0];
+      expect(close.textContent?.trim()).toBe('Close');
+      dispatchMouseEvent(close, 'click');
+
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(getTooltipTrigger(0).textContent).toContain('No');
+      expect(getTooltipTrigger(1).textContent).toContain('Yes');
+      dispatchMouseEvent(getTooltipTrigger(1), 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
