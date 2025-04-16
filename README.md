@@ -24,6 +24,8 @@ All the files ending in [*.store.spec.ts](https://github.com/cioina/angular-test
 
 ## Using Signal type in Angular together with Reactive State library
 
+[![vs](/vs.png?raw=true)](https://github.com/cioina/angular-test-example/blob/main/vs.png)
+
 Before Signal type became native in Angular, we used [Reactive State library]( https://github.com/ngrx/platform) for [our integration tests](https://github.com/cioina/angular-test-example/tree/main/version-1). Now, the library has implemented two ways of using Signals: [@ngrx/signals](https://github.com/stefanoslig/angular-ngrx-nx-realworld-example-app/blob/main/libs/auth/data-access/src/auth.store.ts) and [@ngrx/component-store](https://github.com/AndyT2503/angular-conduit-signals/blob/dev/src/app/shared/store/auth.store.ts). We use the second one direct from sources.
 
 ## Credits
