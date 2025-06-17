@@ -33,6 +33,30 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import ArticleListingComponent from './article-listing.component';
 import { environment } from '../../../environments/environment';
 
+function expectDrawerOpen(
+  fixture: ComponentFixture<ArticleListingComponent>,
+  overlayContainer: OverlayContainer,
+  count: number | undefined
+): void {
+  fixture.detectChanges();
+  expect(
+    overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+  ).toBe(true);
+  const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+  expect(buttons.length).not.toBe(0);
+  expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+  const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+  expect(typography).toBeTruthy();
+  expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
+  const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
+  if (count === undefined) {
+    expect(disabledButtons.length).not.toBe(0);
+  } else {
+    expect(disabledButtons.length).toBe(count);
+  }
+}
+
 describe('article-listing.component', () => {
   describe('openMessageDrawer', () => {
     let TIMEOUT_INTERVAL: number;
@@ -256,23 +280,11 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
+      expectDrawerOpen(fixture, overlayContainer, undefined);
+
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The tag name must be at most 420 characters long.');
-
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).not.toBe(0);
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(1);
@@ -370,19 +382,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).not.toBe(0);
+      expectDrawerOpen(fixture, overlayContainer, undefined);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
@@ -1007,19 +1007,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(4);
+      expectDrawerOpen(fixture, overlayContainer, 4);
 
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(2);
@@ -1039,19 +1027,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(3);
+      expectDrawerOpen(fixture, overlayContainer, 3);
 
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(2);
@@ -1073,19 +1049,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(4);
+      expectDrawerOpen(fixture, overlayContainer, 4);
 
       const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
       expect(switches.length).toBe(2);
@@ -1106,19 +1070,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(4);
+      expectDrawerOpen(fixture, overlayContainer, 4);
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
       expect(inputs.length).toBe(2);
@@ -1139,19 +1091,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(2);
+      expectDrawerOpen(fixture, overlayContainer, 2);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(7);
@@ -1170,19 +1110,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(2);
+      expectDrawerOpen(fixture, overlayContainer, 2);
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
       expect(inputs.length).toBe(2);
@@ -1210,19 +1138,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(2);
+      expectDrawerOpen(fixture, overlayContainer, 2);
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(1);
@@ -1243,19 +1159,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(2);
+      expectDrawerOpen(fixture, overlayContainer, 2);
 
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
@@ -1285,19 +1189,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).toBe(4);
+      expectDrawerOpen(fixture, overlayContainer, 4);
 
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(2);
@@ -1400,19 +1292,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).not.toBe(0);
+      expectDrawerOpen(fixture, overlayContainer, undefined);
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(1);
@@ -1547,19 +1427,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).not.toBe(0);
+      expectDrawerOpen(fixture, overlayContainer, undefined);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
@@ -1681,19 +1549,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[4].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Create/Edit Tags');
-      const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
-      expect(disabledButtons.length).not.toBe(0);
+      expectDrawerOpen(fixture, overlayContainer, undefined);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);

@@ -848,7 +848,6 @@ export class TestHelpComponent implements OnInit, OnDestroy {
     this.#authStore.setUrlPath('path');
     this.#authStore.setIsCompactTheme(true);
     this.#authStore.setIsNightTheme(true);
-    this.#authStore.setMenuSplitNav([]);
     this.#authStore.setMenu([]);
   }
 

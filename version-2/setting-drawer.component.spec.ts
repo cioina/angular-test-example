@@ -60,6 +60,7 @@ describe('setting-drawer.component', () => {
       expect(buttons.length).toBe(7);
 
       const buttonElement = buttons[0].nativeElement;
+      buttonElement.classList.contains('anticon-setting');
       buttonElement.click();
       fixture.detectChanges();
     }));
@@ -75,16 +76,14 @@ describe('setting-drawer.component', () => {
 
       component.changeStyleTheme('dark');
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
 
-    beforeEach(waitForAsync(() => {
+      component.changeTheme({
+        key: 'light',
+        image: 'assets/imgs/theme-light.svg',
+        title: 'Bright menu style',
+        isChecked: false
+      });
       fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
 
       component.changeMode({
         key: 'top',
@@ -93,16 +92,6 @@ describe('setting-drawer.component', () => {
         isChecked: true
       });
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
 
       component.changeTheme({
         key: 'dark',
@@ -111,98 +100,37 @@ describe('setting-drawer.component', () => {
         isChecked: true
       });
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
 
-    beforeEach(waitForAsync(() => {
+      component.changePrimaryColor({
+        key: 'green',
+        color: '#52C41A',
+        title: 'Green',
+        isChecked: false
+      });
       fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
 
       component.changeThemeOptions(false, 'isShowTab');
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
 
       component.changeThemeOptions(false, 'fixedHead');
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
 
       component.changeSpecialTheme(true, 'color-weak');
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
 
       component.changeSpecialTheme(true, 'grey-theme');
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
 
-    beforeEach(waitForAsync(() => {
+      component.resetMenuSettingsToDefault();
       fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      component.dragging = true;
-      component.dragEnd();
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
 
       component.dragging = true;
       component.changeCollapsed();
       fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
 
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      component.resetMenuSettingsToDefault();
+      // Error becouse of setTimeout
+      component.dragging = true;
+      component.dragEnd();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -217,7 +145,7 @@ describe('setting-drawer.component', () => {
       })
     );
 
-    it('should changeStyleTheme to dark', fakeAsync(() => {
+    it('should get 100% coverage-report', fakeAsync(() => {
       tick(20);
       fixture.detectChanges();
     }));

@@ -29,6 +29,25 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import ProfileComponent from './profile.component';
 import { environment } from '../../environments/environment';
 
+function expectDrawerOpen(fixture: ComponentFixture<ProfileComponent>, overlayContainer: OverlayContainer): void {
+  fixture.detectChanges();
+  expect(
+    overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+  ).toBe(true);
+  const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+  expect(buttons.length).toBe(3);
+  expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
+  expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
+  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+  const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
+  expect(avatar.classList.contains('ant-avatar')).toBe(true);
+
+  const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+  expect(typography).toBeTruthy();
+  expect(typography?.textContent?.trim()).toBe('Update Account');
+}
+
 describe('profile.component', () => {
   describe('change password', () => {
     let TIMEOUT_INTERVAL: number;
@@ -90,24 +109,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(3);
@@ -157,15 +159,12 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
+      expectDrawerOpen(fixture, overlayContainer);
+
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(2);
       expect(errors[0].textContent?.trim()).toBe('The password must be at most 32 characters long.');
       expect(errors[1].textContent?.trim()).toBe('The password must be at most 32 characters long.');
-
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -252,24 +251,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       helpComponent.logout();
       fixture.detectChanges();
@@ -485,25 +467,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
-
+      expectDrawerOpen(fixture, overlayContainer);
       helpComponent.setNeedsRefreshToken();
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
@@ -718,25 +682,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
-
+      expectDrawerOpen(fixture, overlayContainer);
       helpComponent.setNeedsRefreshToken();
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
@@ -791,24 +737,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
@@ -970,24 +899,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       helpComponent.setNeedsRefreshToken();
 
@@ -1071,24 +983,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(3);
@@ -1123,28 +1018,11 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
+      expectDrawerOpen(fixture, overlayContainer);
+
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The username must be at most 100 characters long.');
-
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
 
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(3);
@@ -1456,24 +1334,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
@@ -1506,24 +1367,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn-dangerous');
       expect(xButton).toBeTruthy();
@@ -1634,24 +1478,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
@@ -1763,24 +1590,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
@@ -1893,24 +1703,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-
-      fixture.detectChanges();
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).toBe(3);
-      expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
-
-      const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
-      expect(avatar.classList.contains('ant-avatar')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Update Account');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);

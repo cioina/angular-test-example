@@ -26,6 +26,23 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import ArticleListingComponent from './article-listing.component';
 import { environment } from '../../../environments/environment';
 
+function expectDrawerOpen(
+  fixture: ComponentFixture<ArticleListingComponent>,
+  overlayContainer: OverlayContainer
+): void {
+  fixture.detectChanges();
+  expect(
+    overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+  ).toBe(true);
+  const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+  expect(buttons.length).not.toBe(0);
+  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+  const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+  expect(typography).toBeTruthy();
+  expect(typography?.textContent?.trim()).toBe('Edit Article');
+}
+
 describe('article-listing-monaco-editor.component', () => {
   describe('Load Monaco Editor should fail for the first time, but should work for next tests', () => {
     let TIMEOUT_INTERVAL: number;
@@ -96,17 +113,7 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -201,17 +208,7 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -270,21 +267,12 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
+      expectDrawerOpen(fixture, overlayContainer);
+
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(2);
       expect(errors[0].textContent?.trim()).toBe('The slug must be at most 320 characters long.');
       expect(errors[1].textContent?.trim()).toBe('The title must be at most 320 characters long.');
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -392,17 +380,7 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -437,17 +415,7 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -578,17 +546,7 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -622,17 +580,7 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -745,17 +693,7 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
@@ -885,18 +823,8 @@ describe('article-listing-monaco-editor.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
       helpComponent.setNeedsRefreshToken();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
+      expectDrawerOpen(fixture, overlayContainer);
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
