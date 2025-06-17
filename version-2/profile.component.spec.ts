@@ -29,6 +29,18 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import ProfileComponent from './profile.component';
 import { environment } from '../../environments/environment';
 
+function getTooltipTrigger(overlayContainer: OverlayContainer, index: number): Element {
+  return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
+}
+
+function clickYes(fixture: ComponentFixture<ProfileComponent>, overlayContainer: OverlayContainer): void {
+  fixture.detectChanges();
+  expect(getTooltipTrigger(overlayContainer, 0).textContent).toContain('No');
+  expect(getTooltipTrigger(overlayContainer, 1).textContent).toContain('Yes');
+  dispatchMouseEvent(getTooltipTrigger(overlayContainer, 1), 'click');
+  fixture.detectChanges();
+}
+
 function expectDrawerOpen(fixture: ComponentFixture<ProfileComponent>, overlayContainer: OverlayContainer): void {
   fixture.detectChanges();
   expect(
@@ -195,10 +207,6 @@ describe('profile.component', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
-
     beforeEach(() => {
       localStorage.clear();
       TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -290,11 +298,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -377,11 +381,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -410,10 +410,6 @@ describe('profile.component', () => {
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
-
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
 
     beforeEach(() => {
       localStorage.clear();
@@ -481,11 +477,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -521,11 +513,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -591,11 +579,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -625,10 +609,6 @@ describe('profile.component', () => {
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
-
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
 
     beforeEach(() => {
       localStorage.clear();
@@ -696,11 +676,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -726,11 +702,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -750,11 +722,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -789,11 +757,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -843,10 +807,6 @@ describe('profile.component', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
-
     beforeEach(() => {
       localStorage.clear();
       TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -914,11 +874,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -943,11 +899,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -972,11 +924,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1044,11 +992,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1278,10 +1222,6 @@ describe('profile.component', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
-
     beforeEach(() => {
       localStorage.clear();
       TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -1347,11 +1287,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1379,11 +1315,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1421,10 +1353,6 @@ describe('profile.component', () => {
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
-
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
 
     beforeEach(() => {
       localStorage.clear();
@@ -1490,11 +1418,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1533,10 +1457,6 @@ describe('profile.component', () => {
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
-
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
 
     beforeEach(() => {
       localStorage.clear();
@@ -1602,11 +1522,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1647,10 +1563,6 @@ describe('profile.component', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
-
     beforeEach(() => {
       localStorage.clear();
       TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -1715,11 +1627,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1740,11 +1648,7 @@ describe('profile.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
-      fixture.detectChanges();
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();

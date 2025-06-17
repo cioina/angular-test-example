@@ -42,6 +42,18 @@ const statusMap = {
   success: 'ant-form-item-has-success'
 };
 
+function getTooltipTrigger(overlayContainer: OverlayContainer, index: number): Element {
+  return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
+}
+
+function clickYes(fixture: ComponentFixture<RegisterComponent>, overlayContainer: OverlayContainer): void {
+  fixture.detectChanges();
+  expect(getTooltipTrigger(overlayContainer, 0).textContent).toContain('No');
+  expect(getTooltipTrigger(overlayContainer, 1).textContent).toContain('Yes');
+  dispatchMouseEvent(getTooltipTrigger(overlayContainer, 1), 'click');
+  fixture.detectChanges();
+}
+
 describe('register.component', () => {
   describe('reactive register.component status', () => {
     let component: RegisterComponent;
@@ -233,10 +245,6 @@ describe('register.component', () => {
     let formItems: DebugElement[];
     let buttons: DebugElement[];
 
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
-
     beforeEach(() => {
       localStorage.clear();
       TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -303,10 +311,7 @@ describe('register.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -340,10 +345,6 @@ describe('register.component', () => {
     let formGroup: FormGroup;
     let formItems: DebugElement[];
     let buttons: DebugElement[];
-
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
 
     beforeEach(() => {
       localStorage.clear();
@@ -483,10 +484,7 @@ describe('register.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -523,10 +521,6 @@ describe('register.component', () => {
     let formGroup: FormGroup;
     let formItems: DebugElement[];
     let buttons: DebugElement[];
-
-    function getTooltipTrigger(index: number): Element {
-      return overlayContainer.getContainerElement().querySelectorAll('.ant-popover-buttons button')[index];
-    }
 
     beforeEach(() => {
       localStorage.clear();
@@ -600,10 +594,7 @@ describe('register.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(getTooltipTrigger(0).textContent).toContain('No');
-      expect(getTooltipTrigger(1).textContent).toContain('Yes');
-      dispatchMouseEvent(getTooltipTrigger(1), 'click');
+      clickYes(fixture, overlayContainer);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
