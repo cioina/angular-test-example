@@ -38,6 +38,52 @@ function clickYes(fixture: ComponentFixture<ArticleListingComponent>, overlayCon
   fixture.detectChanges();
 }
 
+function clickMonacoEditor(
+  fixture: ComponentFixture<ArticleListingComponent>,
+  component: ArticleListingComponent
+): void {
+  fixture.detectChanges();
+  expect(component.articleList().length).not.toBe(0);
+  expect(component.tagList().length).not.toBe(0);
+  const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+  expect(buttons.length).not.toBe(0);
+  buttons[5].nativeElement.click();
+  fixture.detectChanges();
+}
+
+function createComponent(overlayContainer: OverlayContainer): {
+  fixture: ComponentFixture<ArticleListingComponent>;
+  component: ArticleListingComponent;
+} {
+  const fixture = TestBed.createComponent(ArticleListingComponent);
+  const component = fixture.componentInstance;
+  expect(component.user()?.email).toBe(environment.testUserEmail);
+  expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+  fixture.detectChanges();
+  return {
+    fixture,
+    component
+  };
+}
+
+function createHelpComponent(): {
+  helpFixture: ComponentFixture<TestHelpComponent>;
+  helpComponent: TestHelpComponent;
+} {
+  const helpFixture = TestBed.createComponent(TestHelpComponent);
+  const helpComponent = helpFixture.componentInstance;
+
+  helpFixture.detectChanges();
+  expect(helpComponent.isAuthenticated()).toBe(false);
+
+  helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+  helpFixture.detectChanges();
+  return {
+    helpFixture,
+    helpComponent
+  };
+}
+
 function expectDrawerOpen(
   fixture: ComponentFixture<ArticleListingComponent>,
   overlayContainer: OverlayContainer
@@ -81,14 +127,9 @@ describe('article-listing-monaco-editor.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -101,24 +142,16 @@ describe('article-listing-monaco-editor.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(component.articleList().length).not.toBe(0);
-      expect(component.tagList().length).not.toBe(0);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      buttons[5].nativeElement.click();
-      fixture.detectChanges();
+      clickMonacoEditor(fixture, component);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -176,14 +209,9 @@ describe('article-listing-monaco-editor.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -196,24 +224,16 @@ describe('article-listing-monaco-editor.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(component.articleList().length).not.toBe(0);
-      expect(component.tagList().length).not.toBe(0);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      buttons[5].nativeElement.click();
-      fixture.detectChanges();
+      clickMonacoEditor(fixture, component);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -344,14 +364,9 @@ describe('article-listing-monaco-editor.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -364,24 +379,16 @@ describe('article-listing-monaco-editor.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(component.articleList().length).not.toBe(0);
-      expect(component.tagList().length).not.toBe(0);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      buttons[5].nativeElement.click();
-      fixture.detectChanges();
+      clickMonacoEditor(fixture, component);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -481,14 +488,9 @@ describe('article-listing-monaco-editor.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -501,24 +503,16 @@ describe('article-listing-monaco-editor.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(component.articleList().length).not.toBe(0);
-      expect(component.tagList().length).not.toBe(0);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      buttons[5].nativeElement.click();
-      fixture.detectChanges();
+      clickMonacoEditor(fixture, component);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -633,14 +627,9 @@ describe('article-listing-monaco-editor.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -653,24 +642,16 @@ describe('article-listing-monaco-editor.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(component.articleList().length).not.toBe(0);
-      expect(component.tagList().length).not.toBe(0);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      buttons[5].nativeElement.click();
-      fixture.detectChanges();
+      clickMonacoEditor(fixture, component);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -738,14 +719,9 @@ describe('article-listing-monaco-editor.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -758,24 +734,16 @@ describe('article-listing-monaco-editor.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(component.articleList().length).not.toBe(0);
-      expect(component.tagList().length).not.toBe(0);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      buttons[5].nativeElement.click();
-      fixture.detectChanges();
+      clickMonacoEditor(fixture, component);
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();

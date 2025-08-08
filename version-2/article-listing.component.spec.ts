@@ -45,6 +45,39 @@ function clickYes(fixture: ComponentFixture<ArticleListingComponent>, overlayCon
   fixture.detectChanges();
 }
 
+function createComponent(overlayContainer: OverlayContainer): {
+  fixture: ComponentFixture<ArticleListingComponent>;
+  component: ArticleListingComponent;
+} {
+  const fixture = TestBed.createComponent(ArticleListingComponent);
+  const component = fixture.componentInstance;
+  expect(component.user()?.email).toBe(environment.testUserEmail);
+  expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+  fixture.detectChanges();
+  return {
+    fixture,
+    component
+  };
+}
+
+function createHelpComponent(): {
+  helpFixture: ComponentFixture<TestHelpComponent>;
+  helpComponent: TestHelpComponent;
+} {
+  const helpFixture = TestBed.createComponent(TestHelpComponent);
+  const helpComponent = helpFixture.componentInstance;
+
+  helpFixture.detectChanges();
+  expect(helpComponent.isAuthenticated()).toBe(false);
+
+  helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+  helpFixture.detectChanges();
+  return {
+    helpFixture,
+    helpComponent
+  };
+}
+
 function expectDrawerOpen(
   fixture: ComponentFixture<ArticleListingComponent>,
   overlayContainer: OverlayContainer,
@@ -67,6 +100,41 @@ function expectDrawerOpen(
   } else {
     expect(disabledButtons.length).toBe(count);
   }
+}
+
+function expectArticleTags(
+  fixture: ComponentFixture<ArticleListingComponent>,
+  overlayContainer: OverlayContainer
+): void {
+  fixture.detectChanges();
+  expect(
+    overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+  ).toBe(true);
+  const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+  expect(buttons.length).not.toBe(0);
+  expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+  const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+  expect(typography).toBeTruthy();
+  expect(typography?.textContent?.trim()).toBe('Article Tags');
+}
+
+function expectNewArticle(
+  fixture: ComponentFixture<ArticleListingComponent>,
+  overlayContainer: OverlayContainer,
+  title: string
+): void {
+  fixture.detectChanges();
+  expect(
+    overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
+  ).toBe(true);
+  const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+  expect(buttons.length).not.toBe(0);
+  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+
+  const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
+  expect(typography).toBeTruthy();
+  expect(typography?.textContent?.trim()).toBe(title);
 }
 
 describe('article-listing.component', () => {
@@ -95,14 +163,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -115,11 +178,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -199,14 +260,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -219,11 +275,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -445,14 +499,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -465,11 +514,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -487,18 +534,6 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
-
       const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn-dangerous');
       expect(xButton).toBeTruthy();
       expect(xButton!.textContent?.trim()).toBe('Close');
@@ -545,7 +580,7 @@ describe('article-listing.component', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
     let fixture: ComponentFixture<ArticleListingComponent>;
-    let helpComponent: TestHelpComponent;
+    //let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
@@ -566,14 +601,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      //helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -586,11 +616,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -610,17 +638,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(2);
 
@@ -638,17 +657,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
 
@@ -672,17 +682,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
 
@@ -715,17 +716,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
 
@@ -751,17 +743,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
 
@@ -791,17 +774,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
 
@@ -824,17 +798,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
 
@@ -850,17 +815,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectArticleTags(fixture, overlayContainer);
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Article Tags');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
 
@@ -910,7 +866,7 @@ describe('article-listing.component', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
     let fixture: ComponentFixture<ArticleListingComponent>;
-    let helpComponent: TestHelpComponent;
+    //let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
@@ -931,14 +887,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      //helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -951,11 +902,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1212,14 +1161,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -1232,11 +1176,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1339,14 +1281,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -1359,11 +1296,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1453,14 +1388,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -1473,11 +1403,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1567,14 +1495,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -1587,11 +1510,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1611,17 +1532,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectNewArticle(fixture, overlayContainer, 'New Article');
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('New Article');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
 
@@ -1688,17 +1600,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectNewArticle(fixture, overlayContainer, 'New Article');
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('New Article');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
@@ -1775,14 +1678,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -1795,11 +1693,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1819,17 +1715,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectNewArticle(fixture, overlayContainer, 'Edit Article');
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
 
@@ -1882,17 +1769,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectNewArticle(fixture, overlayContainer, 'Edit Article');
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
@@ -1962,14 +1840,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -1982,11 +1855,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -2004,17 +1875,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('New Article');
+      expectNewArticle(fixture, overlayContainer, 'New Article');
 
       const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn-dangerous');
       expect(xButton).toBeTruthy();
@@ -2082,14 +1943,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -2102,11 +1958,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -2183,6 +2037,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
+      expectNewArticle(fixture, overlayContainer, 'New Article');
+
       fixture.detectChanges();
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(3);
@@ -2190,16 +2046,6 @@ describe('article-listing.component', () => {
       expect(errors[1].textContent?.trim()).toBe('The title must be at most 320 characters long.');
       expect(errors[2].textContent?.trim()).toBe('The description must be at most 200000 characters long.');
 
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('New Article');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
 
@@ -2247,17 +2093,7 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
-
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('New Article');
+      expectNewArticle(fixture, overlayContainer, 'New Article');
 
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(3);
@@ -2326,14 +2162,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -2346,11 +2177,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -2370,17 +2199,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectNewArticle(fixture, overlayContainer, 'New Article');
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('New Article');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
 
@@ -2470,14 +2290,9 @@ describe('article-listing.component', () => {
         imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -2490,11 +2305,9 @@ describe('article-listing.component', () => {
     );
 
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ArticleListingComponent);
-      component = fixture.componentInstance;
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -2514,17 +2327,8 @@ describe('article-listing.component', () => {
     });
 
     beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(
-        overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
-      ).toBe(true);
-      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
-      expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expectNewArticle(fixture, overlayContainer, 'Edit Article');
 
-      const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
-      expect(typography).toBeTruthy();
-      expect(typography?.textContent?.trim()).toBe('Edit Article');
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
 
