@@ -50,7 +50,7 @@ function expectDrawerOpen(fixture: ComponentFixture<ProfileComponent>, overlayCo
   expect(buttons.length).toBe(3);
   expect(buttons[0].nativeElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
   expect(buttons[1].nativeElement.firstElementChild!.classList.contains('anticon-audit')).toBe(true);
-  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
   const avatar = fixture.debugElement.query(By.directive(NzAvatarComponent)).nativeElement;
   expect(avatar.classList.contains('ant-avatar')).toBe(true);
@@ -1682,7 +1682,9 @@ describe('profile.component', () => {
   });
 });
 
-@Component({})
+@Component({
+  template: ``
+})
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
   readonly errorResponse = this.#authStore.selectors.errorResponse;

@@ -158,6 +158,7 @@ describe('profile.store', () => {
 });
 
 @Component({
+  template: ``,
   providers: [provideComponentStore(ProfileStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {

@@ -198,13 +198,13 @@ describe('login.component', () => {
 
       const buttonElement = buttons[1].nativeElement;
       expect(buttonElement.classList.contains('ant-btn-loading')).toBe(false);
-      expect(buttonElement.firstElementChild!.classList.contains('anticon-loading')).toBe(false);
+      expect(buttonElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(false);
 
       buttonElement.click();
       fixture.detectChanges();
 
       expect(buttonElement.classList.contains('ant-btn-loading')).toBe(true);
-      expect(buttonElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expect(buttonElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
       helpFixture.detectChanges();
     }));
@@ -315,13 +315,13 @@ describe('login.component', () => {
 
       const buttonElement = buttons[1].nativeElement;
       expect(buttonElement.classList.contains('ant-btn-loading')).toBe(false);
-      expect(buttonElement.firstElementChild!.classList.contains('anticon-loading')).toBe(false);
+      expect(buttonElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(false);
 
       buttonElement.click();
       fixture.detectChanges();
 
       expect(buttonElement.classList.contains('ant-btn-loading')).toBe(true);
-      expect(buttonElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+      expect(buttonElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
       helpFixture.detectChanges();
     }));
@@ -346,7 +346,9 @@ describe('login.component', () => {
   });
 });
 
-@Component({})
+@Component({
+  template: ``
+})
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
   readonly errorResponse = this.#authStore.selectors.errorResponse;

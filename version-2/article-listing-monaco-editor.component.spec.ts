@@ -94,7 +94,7 @@ function expectDrawerOpen(
   ).toBe(true);
   const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
   expect(buttons.length).not.toBe(0);
-  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('anticon-loading')).toBe(true);
+  expect(buttons[2].nativeElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
   const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
   expect(typography).toBeTruthy();
@@ -872,7 +872,9 @@ describe('article-listing-monaco-editor.component', () => {
   });
 });
 
-@Component({})
+@Component({
+  template: ``
+})
 export class TestHelpComponent implements OnDestroy {
   readonly #authStore = inject(AuthStore);
   readonly isAuthenticated = this.#authStore.selectors.isAuthenticated;

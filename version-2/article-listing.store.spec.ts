@@ -1408,6 +1408,7 @@ describe('article-listing.store', () => {
 });
 
 @Component({
+  template: ``,
   providers: [provideComponentStore(ArticleListingStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {

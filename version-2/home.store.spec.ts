@@ -720,6 +720,7 @@ describe('home.store', () => {
 });
 
 @Component({
+  template: ``,
   providers: [provideComponentStore(HomeStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {

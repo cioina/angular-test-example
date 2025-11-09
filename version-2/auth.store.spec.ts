@@ -678,7 +678,9 @@ describe('auth.store', () => {
   });
 });
 
-@Component({})
+@Component({
+  template: ``
+})
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
   readonly errorResponse = this.#authStore.selectors.errorResponse;
