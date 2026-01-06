@@ -311,10 +311,10 @@ describe('profile.component', () => {
       expect(helpComponent.isAuthenticated()).toBe(true);
       const messages = overlayContainer
         .getContainerElement()
-        .querySelectorAll('.ant-typography.ant-typography-danger.ng-star-inserted');
-      expect(messages.length).toBe(4);
+        .querySelectorAll('h5.ant-typography.ant-typography-danger');
+      expect(messages.length).toBe(2);
+      expect(messages[0].textContent?.trim()).toBe('Invalid credentials.');
       expect(messages[1].textContent?.trim()).toBe('Invalid credentials.');
-      expect(messages[3].textContent?.trim()).toBe('Invalid credentials.');
 
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
@@ -526,10 +526,10 @@ describe('profile.component', () => {
       expect(helpComponent.isAuthenticated()).toBe(true);
       const messages = overlayContainer
         .getContainerElement()
-        .querySelectorAll('.ant-typography.ant-typography-danger.ng-star-inserted');
-      expect(messages.length).toBe(4);
+        .querySelectorAll('h5.ant-typography.ant-typography-danger');
+      expect(messages.length).toBe(2);
+      expect(messages[0].textContent?.trim()).toBe('Invalid credentials.');
       expect(messages[1].textContent?.trim()).toBe('Invalid credentials.');
-      expect(messages[3].textContent?.trim()).toBe('Invalid credentials.');
 
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
@@ -770,10 +770,10 @@ describe('profile.component', () => {
       expect(helpComponent.isAuthenticated()).toBe(true);
       const messages = overlayContainer
         .getContainerElement()
-        .querySelectorAll('.ant-typography.ant-typography-danger.ng-star-inserted');
-      expect(messages.length).toBe(4);
+        .querySelectorAll('h5.ant-typography.ant-typography-danger');
+      expect(messages.length).toBe(2);
+      expect(messages[0].textContent?.trim()).toBe('Invalid credentials.');
       expect(messages[1].textContent?.trim()).toBe('Invalid credentials.');
-      expect(messages[3].textContent?.trim()).toBe('Invalid credentials.');
 
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();

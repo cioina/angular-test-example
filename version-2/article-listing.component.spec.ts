@@ -396,9 +396,9 @@ describe('article-listing.component', () => {
       fixture.detectChanges();
       const messages = overlayContainer
         .getContainerElement()
-        .querySelectorAll('.ant-typography.ant-typography-danger.ng-star-inserted');
-      expect(messages.length).toBe(5);
-      expect(messages[4].textContent?.trim()).toBe('Invalid credentials.');
+        .querySelectorAll('h5.ant-typography.ant-typography-danger');
+      expect(messages.length).toBe(3);
+      expect(messages[2].textContent?.trim()).toBe('Invalid credentials.');
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(1);
       dispatchFakeEvent(inputs[0], 'focusin');

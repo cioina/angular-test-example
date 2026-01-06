@@ -828,9 +828,9 @@ describe('article-listing-monaco-editor.component', () => {
       fixture.detectChanges();
       const messages = overlayContainer
         .getContainerElement()
-        .querySelectorAll('.ant-typography.ant-typography-danger.ng-star-inserted');
-      expect(messages.length).toBe(4);
-      expect(messages[3].textContent?.trim()).toBe('Invalid credentials.');
+        .querySelectorAll('h5.ant-typography.ant-typography-danger');
+      expect(messages.length).toBe(2);
+      expect(messages[1].textContent?.trim()).toBe('Invalid credentials.');
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(1);
       dispatchFakeEvent(inputs[0], 'focusin');
