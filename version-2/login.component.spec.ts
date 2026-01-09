@@ -9,7 +9,6 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MinEmailLength, MaxEmailLength, MinPasswordLength, MaxPasswordLength } from '@app/shared/constants';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
@@ -18,6 +17,7 @@ import { AuthStore } from '@app/shared/store';
 import { provideComponentStore } from '@ngrx/component-store';
 
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { NzFormControlComponent, NzFormItemComponent } from 'ng-zorro-antd/form';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -46,10 +46,11 @@ describe('login.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, LoginComponent]
+        imports: [LoginComponent]
       }).compileComponents();
 
       fixture = TestBed.createComponent(LoginComponent);
@@ -164,10 +165,11 @@ describe('login.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, LoginComponent]
+        imports: [TestHelpComponent, LoginComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -243,10 +245,11 @@ describe('login.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, LoginComponent]
+        imports: [TestHelpComponent, LoginComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);

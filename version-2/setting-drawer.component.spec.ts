@@ -7,12 +7,12 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { AuthStore } from '@app/shared/store';
 import { provideComponentStore } from '@ngrx/component-store';
 
+import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -36,10 +36,11 @@ describe('setting-drawer.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, SettingDrawerComponent]
+        imports: [SettingDrawerComponent]
       }).compileComponents();
     }));
 

@@ -10,7 +10,6 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import {
   MinEmailLength,
@@ -26,6 +25,7 @@ import { AuthStore } from '@app/shared/store';
 import { provideComponentStore } from '@ngrx/component-store';
 
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
 import { dispatchMouseEvent } from 'ng-zorro-antd/core/testing';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { NzFormControlComponent, NzFormItemComponent } from 'ng-zorro-antd/form';
@@ -67,10 +67,11 @@ describe('register.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, RegisterComponent]
+        imports: [RegisterComponent]
       }).compileComponents();
 
       fixture = TestBed.createComponent(RegisterComponent);
@@ -256,10 +257,11 @@ describe('register.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, RegisterComponent]
+        imports: [RegisterComponent]
       }).compileComponents();
 
       fixture = TestBed.createComponent(RegisterComponent);
@@ -357,10 +359,11 @@ describe('register.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, RegisterComponent]
+        imports: [TestHelpComponent, RegisterComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -533,10 +536,11 @@ describe('register.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, RegisterComponent]
+        imports: [TestHelpComponent, RegisterComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);

@@ -8,7 +8,6 @@ import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse } from '@app/shared/models';
@@ -17,6 +16,7 @@ import { AuthStore } from '@app/shared/store';
 import { TypedFormGroup } from '@app/shared/utils';
 import { provideComponentStore } from '@ngrx/component-store';
 
+import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
@@ -40,10 +40,11 @@ describe('profile.store', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent]
+        imports: [TestHelpComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -105,10 +106,11 @@ describe('profile.store', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent]
+        imports: [TestHelpComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);

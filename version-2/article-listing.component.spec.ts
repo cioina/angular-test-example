@@ -9,7 +9,6 @@ import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import {
   MinNameLength,
@@ -26,6 +25,7 @@ import { TypedFormGroup } from '@app/shared/utils';
 import { provideComponentStore } from '@ngrx/component-store';
 
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
 import { dispatchMouseEvent, dispatchFakeEvent, typeInElement } from 'ng-zorro-antd/core/testing';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -157,10 +157,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -254,10 +255,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -398,6 +400,8 @@ describe('article-listing.component', () => {
         .getContainerElement()
         .querySelectorAll('h5.ant-typography.ant-typography-danger');
       expect(messages.length).toBe(3);
+      expect(messages[0].textContent?.trim()).toBe('');
+      expect(messages[1].textContent?.trim()).toBe('Please refresh your JWT token');
       expect(messages[2].textContent?.trim()).toBe('Invalid credentials.');
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(1);
@@ -493,10 +497,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -595,10 +600,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -881,10 +887,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -1155,10 +1162,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -1275,10 +1283,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -1382,10 +1391,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -1489,10 +1499,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -1672,10 +1683,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -1834,10 +1846,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -1937,10 +1950,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -2156,10 +2170,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();
@@ -2284,10 +2299,11 @@ describe('article-listing.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ArticleListingComponent]
+        imports: [TestHelpComponent, ArticleListingComponent]
       }).compileComponents();
 
       const h = createHelpComponent();

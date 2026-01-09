@@ -10,7 +10,6 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MinUserNameLength, MaxUserNameLength, MinPasswordLength, MaxPasswordLength } from '@app/shared/constants';
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
@@ -22,6 +21,7 @@ import { provideComponentStore } from '@ngrx/component-store';
 
 import { NzAvatarComponent } from 'ng-zorro-antd/avatar';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { provideNzNoAnimation } from 'ng-zorro-antd/core/animation';
 import { dispatchMouseEvent, dispatchFakeEvent, typeInElement } from 'ng-zorro-antd/core/testing';
 import { NzDrawerService } from 'ng-zorro-antd/drawer';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
@@ -80,10 +80,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -218,10 +219,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -422,10 +424,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -621,10 +624,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -818,10 +822,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -1042,10 +1047,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -1097,10 +1103,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -1159,10 +1166,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -1233,10 +1241,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -1365,10 +1374,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -1469,10 +1479,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
@@ -1574,10 +1585,11 @@ describe('profile.component', () => {
         providers: [
           provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
           provideNzIconsTesting(),
+          provideNzNoAnimation(),
           provideComponentStore(AuthStore),
           NzDrawerService
         ],
-        imports: [NoopAnimationsModule, TestHelpComponent, ProfileComponent]
+        imports: [TestHelpComponent, ProfileComponent]
       }).compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
