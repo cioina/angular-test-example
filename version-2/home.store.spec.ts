@@ -487,6 +487,134 @@ describe('home.store', () => {
     }));
   });
 
+  describe('onOffsetChange function 1', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideNzNoAnimation(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpComponent.getArticles({
+        limit: 1000,
+        offset: 0,
+        tags: [3]
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.articleList()?.length).toBe(2);
+      expect(helpComponent.articleCount()).toBe(2);
+      helpComponent.onOffsetChange(2);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return 0 articles and total equals 2', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(helpComponent.articleList()?.length).toBe(0);
+      expect(helpComponent.articleCount()).toBe(2);
+      expect(helpComponent.authStoreErrors?.length).toBe(0);
+    }));
+  });
+
+  describe('onLimitChange function 1', () => {
+    let TIMEOUT_INTERVAL: number;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      localStorage.clear();
+      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+    });
+
+    beforeEach(waitForAsync(() => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+          provideNzIconsTesting(),
+          provideNzNoAnimation(),
+          provideComponentStore(AuthStore),
+          NzDrawerService
+        ],
+        imports: [TestHelpComponent]
+      }).compileComponents();
+
+      helpFixture = TestBed.createComponent(TestHelpComponent);
+      helpComponent = helpFixture.componentInstance;
+
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      helpComponent.getArticles({
+        limit: 1000,
+        offset: 0,
+        tags: [3]
+      });
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.articleList()?.length).toBe(2);
+      expect(helpComponent.articleCount()).toBe(2);
+      helpComponent.onLimitChange(1);
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should getArticles return 1 articles and total equals 2', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(helpComponent.articleList()?.length).toBe(1);
+      expect(helpComponent.articleCount()).toBe(2);
+      expect(helpComponent.authStoreErrors?.length).toBe(0);
+    }));
+  });
+
   describe('getTags function 1', () => {
     let TIMEOUT_INTERVAL: number;
     let helpComponent: TestHelpComponent;
@@ -752,6 +880,20 @@ export class TestHelpComponent implements OnInit, OnDestroy {
   private injector = inject(Injector);
   authStoreErrors: string[] = [];
   tagsChanged = false;
+
+  onOffsetChange(offset: number): void {
+    this.#homeStore.onOffsetChange({
+      loading: this.isLoading,
+      offset: offset
+    });
+  }
+
+  onLimitChange(limit: number): void {
+    this.#homeStore.onLimitChange({
+      loading: this.isLoading,
+      limit: limit
+    });
+  }
 
   getArticles(params: ArticleGlobalQueryParams): void {
     if (this.isLoading()) {
