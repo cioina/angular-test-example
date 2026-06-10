@@ -4,7 +4,7 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -23,6 +23,47 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import { ProfileStore } from './profile.store';
 import { environment } from '../../environments/environment';
 
+function createHelpComponent(mustLogin: boolean): {
+  helpFixture: ComponentFixture<TestHelpComponent>;
+  helpComponent: TestHelpComponent;
+} {
+  const helpFixture = TestBed.createComponent(TestHelpComponent);
+  const helpComponent = helpFixture.componentInstance;
+
+  helpFixture.detectChanges();
+  expect(helpComponent.isAuthenticated()).toBe(false);
+
+  if (mustLogin) {
+    helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+    helpFixture.detectChanges();
+  }
+
+  return {
+    helpFixture,
+    helpComponent
+  };
+}
+
+function compileComponents(): void {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+      provideNzIconsTesting(),
+      provideNzNoAnimation(),
+      provideComponentStore(AuthStore),
+      NzDrawerService
+    ],
+    imports: [TestHelpComponent]
+  }).compileComponents();
+}
+
+function jasmineTimeoutInterval(n: number): number {
+  localStorage.clear();
+  const i = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = n;
+  return i;
+}
+
 describe('profile.store', () => {
   describe('getProfile function 1', () => {
     let TIMEOUT_INTERVAL: number;
@@ -30,31 +71,13 @@ describe('profile.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(true);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -96,31 +119,13 @@ describe('profile.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(true);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -161,6 +166,7 @@ describe('profile.store', () => {
 
 @Component({
   template: ``,
+  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [provideComponentStore(ProfileStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {

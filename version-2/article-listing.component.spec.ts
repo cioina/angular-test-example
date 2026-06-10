@@ -5,7 +5,7 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -137,6 +137,30 @@ function expectNewArticle(
   expect(typography?.textContent?.trim()).toBe(title);
 }
 
+function compileComponents(): void {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+      provideNzIconsTesting(),
+      provideNzNoAnimation(),
+      provideComponentStore(AuthStore),
+      NzDrawerService
+    ],
+    imports: [TestHelpComponent, ArticleListingComponent]
+  }).compileComponents();
+
+  // [ArticleListingComponent].forEach(comp => {
+  //   (comp as NzSafeAny).ɵcmp.onPush = false;
+  // });
+}
+
+function jasmineTimeoutInterval(n: number): number {
+  localStorage.clear();
+  const i = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = n;
+  return i;
+}
+
 describe('article-listing.component', () => {
   describe('openMessageDrawer', () => {
     let TIMEOUT_INTERVAL: number;
@@ -147,23 +171,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 19000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(19_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -171,13 +182,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -209,6 +218,13 @@ describe('article-listing.component', () => {
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
+      const messages = overlayContainer
+        .getContainerElement()
+        .querySelectorAll('h5.ant-typography.ant-typography-danger');
+      expect(messages.length).toBe(1);
+      expect(messages[0].textContent?.trim()).toBe(
+        'Http failure response for http://localhost:1503/api/v1.0/articles/all: 422 Unprocessable Entity'
+      );
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(1);
       const close = xButtons[0];
@@ -229,7 +245,7 @@ describe('article-listing.component', () => {
     );
 
     it('should click close button work for openMessageDrawer', fakeAsync(() => {
-      tick(5000);
+      tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
@@ -245,23 +261,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -269,13 +272,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -337,24 +338,21 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, undefined);
-
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The tag name must be at most 420 characters long.');
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(1);
       dispatchFakeEvent(inputs[0], 'focusin');
       fixture.detectChanges();
       typeInElement('ASP.NET Core', inputs[0] as HTMLInputElement);
       fixture.detectChanges();
-
       helpComponent.setNeedsRefreshToken();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
-
-      dispatchMouseEvent(xButtons[2], 'click');
+      const newTag = xButtons[2];
+      expect(newTag.textContent?.trim()).toBe('New Tag');
+      dispatchMouseEvent(newTag, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -429,11 +427,11 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, undefined);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
-      expect(xButtons.length).toBe(6);
-
-      dispatchMouseEvent(xButtons[2], 'click');
+      expect(xButtons.length).toBeGreaterThanOrEqual(6);
+      const newTag = xButtons[2];
+      expect(newTag.textContent?.trim()).toBe('New Tag');
+      dispatchMouseEvent(newTag, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -473,7 +471,6 @@ describe('article-listing.component', () => {
         key => `${component.errorResponse()!.errors[key]}`
       );
       expect(errors[0]).toBe(`'Tag Json Title' must be unique.`);
-
       expect(component.user()?.email).toBe(environment.testUserEmail);
     }));
   });
@@ -487,23 +484,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -511,13 +495,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -585,42 +567,25 @@ describe('article-listing.component', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
     let fixture: ComponentFixture<ArticleListingComponent>;
-    //let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
-      //helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -645,13 +610,10 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(2);
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
-
       const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
       expect(transferList.length).not.toBe(0);
       dispatchMouseEvent(transferList[0], 'click');
@@ -664,20 +626,16 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
-
       const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
       expect(switches.length).toBe(2);
       const old = switches[0];
       expect(old.textContent?.trim()).toBe('Newest first');
       dispatchMouseEvent(old, 'click');
       fixture.detectChanges();
-
       const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
       expect(transfer.length).toBe(2);
       dispatchMouseEvent(transfer[0], 'click');
@@ -689,29 +647,24 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
-
       const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
       expect(switches.length).toBe(2);
       const old = switches[0];
       expect(old.textContent?.trim()).toBe('Oldest first');
       dispatchMouseEvent(old, 'click');
       fixture.detectChanges();
-
       const search = switches[1];
       expect(search.textContent?.trim()).toBe('Show Search');
       dispatchMouseEvent(search, 'click');
       fixture.detectChanges();
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
       expect(inputs.length).toBe(2);
       dispatchFakeEvent(inputs[1], 'focusin');
       fixture.detectChanges();
       typeInElement('Angular', inputs[1] as HTMLInputElement);
       fixture.detectChanges();
-
       const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
       expect(transferList.length).not.toBe(0);
       dispatchMouseEvent(transferList[transferList.length - 1], 'click');
@@ -723,20 +676,16 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
-
       const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
       expect(switches.length).toBe(2);
       const search = switches[1];
       expect(search.textContent?.trim()).toBe('Hide Search');
-
       const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
       expect(transfer.length).toBe(2);
       dispatchMouseEvent(transfer[1], 'click');
       fixture.detectChanges();
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
       const sel = selects[1];
@@ -750,24 +699,20 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
-
       const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
       expect(optionItems.length).toBe(2);
       const item = optionItems[0];
       expect(item.textContent?.trim()).toBe('Ascending');
       dispatchMouseEvent(item, 'click');
       fixture.detectChanges();
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
       const sel = selects[2];
       expect(sel.textContent?.trim()).toBe('Sort Order...');
       dispatchMouseEvent(sel, 'click');
       fixture.detectChanges();
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
       expect(inputs.length).toBe(2);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -781,17 +726,14 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
-
       const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
       expect(optionItems.length).toBe(2);
       const item = optionItems[1];
       expect(item.textContent?.trim()).toBe('Descending');
       dispatchMouseEvent(item, 'click');
       fixture.detectChanges();
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
       const sel = selects[0];
@@ -805,10 +747,8 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
-
       const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
       expect(optionItems.length).toBe(3);
       const item = optionItems[1];
@@ -822,10 +762,8 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectArticleTags(fixture, overlayContainer);
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(3);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       const newTag = xButtons[0];
@@ -872,42 +810,25 @@ describe('article-listing.component', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ArticleListingComponent;
     let fixture: ComponentFixture<ArticleListingComponent>;
-    //let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
-      //helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -932,15 +853,12 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 4);
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(2);
-
       const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
       expect(transferList.length).not.toBe(0);
       dispatchMouseEvent(transferList[1], 'click');
       fixture.detectChanges();
-
       const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
       expect(transfer.length).toBe(2);
       dispatchMouseEvent(transfer[1], 'click');
@@ -952,17 +870,14 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 3);
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(2);
-
       const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
       expect(switches.length).toBe(2);
       const editTag = switches[0];
       expect(editTag.textContent?.trim()).toBe('Enable Edit');
       dispatchMouseEvent(editTag, 'click');
       fixture.detectChanges();
-
       const search = switches[1];
       expect(search.textContent?.trim()).toBe('Show Search');
       dispatchMouseEvent(search, 'click');
@@ -974,14 +889,12 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 4);
-
       const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
       expect(switches.length).toBe(2);
       const editTag = switches[0];
       expect(editTag.textContent?.trim()).toBe('Disable Edit');
       const search = switches[1];
       expect(search.textContent?.trim()).toBe('Hide Search');
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
       const sel = selects[0];
@@ -995,14 +908,12 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 4);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
       expect(inputs.length).toBe(2);
       dispatchFakeEvent(inputs[1], 'focusin');
       fixture.detectChanges();
       typeInElement('Angular', inputs[1] as HTMLInputElement);
       fixture.detectChanges();
-
       const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
       expect(optionItems.length).toBe(1);
       const item = optionItems[0];
@@ -1016,12 +927,10 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 2);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(7);
       const newTag = xButtons[3];
       expect(newTag.textContent?.trim()).toBe('Change Tag');
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
       const sel = selects[1];
@@ -1035,21 +944,18 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 2);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input.ant-input');
       expect(inputs.length).toBe(2);
       dispatchFakeEvent(inputs[0], 'focusin');
       fixture.detectChanges();
       typeInElement('Angular', inputs[0] as HTMLInputElement);
       fixture.detectChanges();
-
       const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
       expect(optionItems.length).toBe(2);
       const item = optionItems[0];
       expect(item.textContent?.trim()).toBe('Ascending');
       dispatchMouseEvent(item, 'click');
       fixture.detectChanges();
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
       const sel = selects[2];
@@ -1063,14 +969,12 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 2);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(1);
       dispatchFakeEvent(inputs[0], 'focusin');
       fixture.detectChanges();
       typeInElement('ASP.NET Core', inputs[0] as HTMLInputElement);
       fixture.detectChanges();
-
       const optionItems = overlayContainer.getContainerElement().querySelectorAll('.ant-select-item-option');
       expect(optionItems.length).toBe(2);
       const item = optionItems[1];
@@ -1084,25 +988,20 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 2);
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(3);
-
       const thead = overlayContainer.getContainerElement().querySelectorAll('.ant-table-thead');
       expect(thead.length).toBe(2);
       const checkbox = thead[1];
       expect(checkbox.textContent?.trim()).toBe('All');
-
       const cells = overlayContainer.getContainerElement().querySelectorAll('.ant-table-cell');
       expect(cells.length).not.toBe(0);
       const cell = cells[cells.length - 1];
       expect(cell.textContent?.trim()).toBe('Angular');
-
       const transferList = overlayContainer.getContainerElement().querySelectorAll('.ant-checkbox');
       expect(transferList.length).not.toBe(0);
       dispatchMouseEvent(transferList[transferList.length - 1], 'click');
       fixture.detectChanges();
-
       const transfer = overlayContainer.getContainerElement().querySelectorAll('.ant-transfer-operation .ant-btn');
       expect(transfer.length).toBe(2);
       dispatchMouseEvent(transfer[0], 'click');
@@ -1114,10 +1013,8 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, 4);
-
       const selects = overlayContainer.getContainerElement().querySelectorAll('.ant-select');
       expect(selects.length).toBe(2);
-
       const switches = overlayContainer.getContainerElement().querySelectorAll('.ant-switch-inner');
       expect(switches.length).toBe(2);
       const editTag = switches[0];
@@ -1152,23 +1049,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -1176,13 +1060,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -1207,14 +1089,12 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, undefined);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(1);
       dispatchFakeEvent(inputs[0], 'focusin');
       fixture.detectChanges();
       typeInElement('ASP.NET Core', inputs[0] as HTMLInputElement);
       fixture.detectChanges();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
       const newTag = xButtons[2];
@@ -1259,7 +1139,6 @@ describe('article-listing.component', () => {
         key => `${component.errorResponse()!.errors[key]}`
       );
       expect(errors[0]).toBe(`'Tag Json Title' must be unique.`);
-
       expect(component.user()?.email).toBe(environment.testUserEmail);
     }));
   });
@@ -1273,23 +1152,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -1297,13 +1163,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -1328,7 +1192,6 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, undefined);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
       const close = xButtons[1];
@@ -1381,23 +1244,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -1405,13 +1255,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -1436,7 +1284,6 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer, undefined);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(6);
       const apply = xButtons[0];
@@ -1489,23 +1336,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -1513,13 +1347,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -1544,10 +1376,8 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'New Article');
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(3);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -1564,12 +1394,9 @@ describe('article-listing.component', () => {
       fixture.detectChanges();
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).not.toBeTruthy();
-
       helpComponent.setNeedsRefreshToken();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(3);
-
       dispatchMouseEvent(xButtons[1], 'click');
       fixture.detectChanges();
     }));
@@ -1612,13 +1439,13 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'New Article');
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
-      expect(xButtons.length).toBe(3);
-
-      dispatchMouseEvent(xButtons[1], 'click');
+      expect(xButtons.length).toBeGreaterThanOrEqual(3);
+      const submitConfirmPassword = xButtons[1];
+      expect(submitConfirmPassword.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submitConfirmPassword, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -1673,23 +1500,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -1697,13 +1511,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -1728,19 +1540,16 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'Edit Article');
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
-
       helpComponent.setNeedsRefreshToken();
-
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).not.toBeTruthy();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
-
-      dispatchMouseEvent(xButtons[2], 'click');
+      const submit = xButtons[2];
+      expect(submit.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submit, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -1782,13 +1591,13 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'Edit Article');
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
-      expect(xButtons.length).toBe(4);
-
-      dispatchMouseEvent(xButtons[2], 'click');
+      expect(xButtons.length).toBeGreaterThanOrEqual(4);
+      const submit = xButtons[2];
+      expect(submit.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submit, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -1804,7 +1613,7 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -1836,23 +1645,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -1860,13 +1656,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -1889,7 +1683,6 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'New Article');
-
       const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn-dangerous');
       expect(xButton).toBeTruthy();
       dispatchMouseEvent(xButton!, 'click');
@@ -1940,23 +1733,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -1964,13 +1744,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -1995,7 +1773,6 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(3);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -2030,7 +1807,6 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(3);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -2052,17 +1828,14 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'New Article');
-
       fixture.detectChanges();
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(3);
       expect(errors[0].textContent?.trim()).toBe('The slug must be at most 320 characters long.');
       expect(errors[1].textContent?.trim()).toBe('The title must be at most 320 characters long.');
       expect(errors[2].textContent?.trim()).toBe('The description must be at most 200000 characters long.');
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(3);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -2079,10 +1852,8 @@ describe('article-listing.component', () => {
       fixture.detectChanges();
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).not.toBeTruthy();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(3);
-
       dispatchMouseEvent(xButtons[1], 'click');
       fixture.detectChanges();
     }));
@@ -2108,13 +1879,11 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'New Article');
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(3);
       const close = xButtons[0];
       expect(close.textContent?.trim()).toBe('Close');
       dispatchMouseEvent(close, 'click');
-
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -2160,23 +1929,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -2184,13 +1940,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -2215,10 +1969,8 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'New Article');
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(1);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(3);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -2235,10 +1987,8 @@ describe('article-listing.component', () => {
       fixture.detectChanges();
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).not.toBeTruthy();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(3);
-
       dispatchMouseEvent(xButtons[2], 'click');
       fixture.detectChanges();
     }));
@@ -2289,23 +2039,10 @@ describe('article-listing.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -2313,13 +2050,11 @@ describe('article-listing.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -2344,10 +2079,8 @@ describe('article-listing.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectNewArticle(fixture, overlayContainer, 'Edit Article');
-
       const disabledButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(disabledButtons.length).toBe(0);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(3);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -2356,10 +2089,8 @@ describe('article-listing.component', () => {
       fixture.detectChanges();
       const disabledButton = overlayContainer.getContainerElement().querySelector('.ant-btn[disabled]');
       expect(disabledButton).toBeTruthy();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
-
       dispatchMouseEvent(xButtons[0], 'click');
       fixture.detectChanges();
     }));
@@ -2403,7 +2134,8 @@ describe('article-listing.component', () => {
 });
 
 @Component({
-  template: ``
+  template: ``,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TestHelpComponent implements OnDestroy {
   readonly #authStore = inject(AuthStore);

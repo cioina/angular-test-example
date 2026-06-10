@@ -4,7 +4,7 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
@@ -35,6 +35,47 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 
 import { environment } from '../../../environments/environment';
 
+function createHelpComponent(mustLogin: boolean): {
+  helpFixture: ComponentFixture<TestHelpComponent>;
+  helpComponent: TestHelpComponent;
+} {
+  const helpFixture = TestBed.createComponent(TestHelpComponent);
+  const helpComponent = helpFixture.componentInstance;
+
+  helpFixture.detectChanges();
+  expect(helpComponent.isAuthenticated()).toBe(false);
+
+  if (mustLogin) {
+    helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+    helpFixture.detectChanges();
+  }
+
+  return {
+    helpFixture,
+    helpComponent
+  };
+}
+
+function compileComponents(): void {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+      provideNzIconsTesting(),
+      provideNzNoAnimation(),
+      provideComponentStore(AuthStore),
+      NzDrawerService
+    ],
+    imports: [TestHelpComponent]
+  }).compileComponents();
+}
+
+function jasmineTimeoutInterval(n: number): number {
+  localStorage.clear();
+  const i = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = n;
+  return i;
+}
+
 describe('auth.store', () => {
   describe('registerForm validation errors', () => {
     let TIMEOUT_INTERVAL: number;
@@ -42,29 +83,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(false);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -82,12 +107,10 @@ describe('auth.store', () => {
       const username = helpComponent.registerForm.get('username')!.errors;
       const password = helpComponent.registerForm.get('password')!.errors;
       const confirm = helpComponent.registerForm.get('confirm')!.errors;
-
       expect(email).toBeTruthy();
       expect(username).toBeTruthy();
       expect(password).toBeTruthy();
       expect(confirm).toBeTruthy();
-
       expect(email!.required).toBe(true);
       expect(username!.required).toBe(true);
       expect(password!.required).toBeTruthy(true);
@@ -102,12 +125,10 @@ describe('auth.store', () => {
       const username = helpComponent.registerForm.get('username')!.errors;
       const password = helpComponent.registerForm.get('password')!.errors;
       const confirm = helpComponent.registerForm.get('confirm')!.errors;
-
       expect(email).toBeTruthy();
       expect(username).toBeTruthy();
       expect(password).toBeTruthy();
       expect(confirm).toBeTruthy();
-
       expect(email!.min).toBe(true);
       expect(username!.min).toBe(true);
       expect(password!.min).toBeTruthy(true);
@@ -119,7 +140,6 @@ describe('auth.store', () => {
       helpComponent.registerForm.patchValue({ email: 'notValidEmail', password: '' });
       helpFixture.detectChanges();
       const email = helpComponent.registerForm.get('email')!.errors;
-
       expect(email).toBeTruthy();
       expect(email!.email).toBe(true);
     }));
@@ -131,29 +151,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(false);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -170,11 +174,9 @@ describe('auth.store', () => {
       const username = helpComponent.userForm.get('username')!.errors;
       const password = helpComponent.userForm.get('password')!.errors;
       const confirm = helpComponent.userForm.get('confirm')!.errors;
-
       expect(username).toBeTruthy();
       expect(password).toBeTruthy();
       expect(confirm).toBeTruthy();
-
       expect(username!.required).toBe(true);
       expect(password!.required).toBeTruthy(true);
       expect(confirm!.required).toBe(true);
@@ -187,11 +189,9 @@ describe('auth.store', () => {
       const username = helpComponent.userForm.get('username')!.errors;
       const password = helpComponent.userForm.get('password')!.errors;
       const confirm = helpComponent.userForm.get('confirm')!.errors;
-
       expect(username).toBeTruthy();
       expect(password).toBeTruthy();
       expect(confirm).toBeTruthy();
-
       expect(username!.min).toBe(true);
       expect(password!.min).toBeTruthy(true);
       expect(confirm!.min).toBe(true);
@@ -204,29 +204,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(false);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -242,10 +226,8 @@ describe('auth.store', () => {
       helpFixture.detectChanges();
       const email = helpComponent.loginForm.get('email')!.errors;
       const password = helpComponent.loginForm.get('password')!.errors;
-
       expect(email).toBeTruthy();
       expect(password).toBeTruthy();
-
       expect(email!.required).toBe(true);
       expect(password!.required).toBeTruthy(true);
     }));
@@ -256,10 +238,8 @@ describe('auth.store', () => {
       helpFixture.detectChanges();
       const email = helpComponent.loginForm.get('email')!.errors;
       const password = helpComponent.loginForm.get('password')!.errors;
-
       expect(email).toBeTruthy();
       expect(password).toBeTruthy();
-
       expect(email!.min).toBe(true);
       expect(password!.min).toBeTruthy(true);
     }));
@@ -269,7 +249,6 @@ describe('auth.store', () => {
       helpComponent.loginForm.patchValue({ email: 'notValidEmail', password: '' });
       helpFixture.detectChanges();
       const email = helpComponent.loginForm.get('email')!.errors;
-
       expect(email).toBeTruthy();
       expect(email!.email).toBe(true);
     }));
@@ -281,29 +260,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(false);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -318,7 +281,6 @@ describe('auth.store', () => {
       helpComponent.passwordForm.patchValue({ password: '' });
       helpFixture.detectChanges();
       const password = helpComponent.passwordForm.get('password')!.errors;
-
       expect(password).toBeTruthy();
       expect(password!.required).toBeTruthy(true);
     }));
@@ -328,7 +290,6 @@ describe('auth.store', () => {
       helpComponent.passwordForm.patchValue({ password: 'a' });
       helpFixture.detectChanges();
       const password = helpComponent.passwordForm.get('password')!.errors;
-
       expect(password).toBeTruthy();
       expect(password!.min).toBeTruthy(true);
     }));
@@ -340,27 +301,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-      helpFixture.detectChanges();
-
+      compileComponents();
+      const h = createHelpComponent(false);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
       helpComponent.incompleteCoverageTest();
       helpFixture.detectChanges();
     }));
@@ -385,31 +332,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(true);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -444,7 +373,6 @@ describe('auth.store', () => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.passwordForm.get('password')!.errors).not.toBeTruthy();
-
       expect(helpComponent.isAuthenticated()).toBe(true);
     }));
   });
@@ -455,31 +383,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(true);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -504,31 +414,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(true);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -568,31 +460,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(true);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -634,31 +508,13 @@ describe('auth.store', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent(true);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
@@ -689,7 +545,8 @@ describe('auth.store', () => {
 });
 
 @Component({
-  template: ``
+  template: ``,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);

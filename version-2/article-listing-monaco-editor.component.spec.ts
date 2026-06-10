@@ -5,7 +5,7 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -101,6 +101,26 @@ function expectDrawerOpen(
   expect(typography?.textContent?.trim()).toBe('Edit Article');
 }
 
+function compileComponents(): void {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+      provideNzIconsTesting(),
+      provideNzNoAnimation(),
+      provideComponentStore(AuthStore),
+      NzDrawerService
+    ],
+    imports: [TestHelpComponent, ArticleListingComponent]
+  }).compileComponents();
+}
+
+function jasmineTimeoutInterval(n: number): number {
+  localStorage.clear();
+  const i = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = n;
+  return i;
+}
+
 describe('article-listing-monaco-editor.component', () => {
   describe('Load Monaco Editor should fail for the first time, but should work for next tests', () => {
     let TIMEOUT_INTERVAL: number;
@@ -111,23 +131,10 @@ describe('article-listing-monaco-editor.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(19_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -135,13 +142,11 @@ describe('article-listing-monaco-editor.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -160,7 +165,6 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       fixture.detectChanges();
@@ -194,23 +198,10 @@ describe('article-listing-monaco-editor.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -218,13 +209,11 @@ describe('article-listing-monaco-editor.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -243,7 +232,6 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       fixture.detectChanges();
@@ -254,7 +242,6 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(2);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -284,7 +271,6 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('textarea.ant-input');
       expect(inputs.length).toBe(2);
       dispatchFakeEvent(inputs[0], 'focusin');
@@ -302,12 +288,10 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(2);
       expect(errors[0].textContent?.trim()).toBe('The slug must be at most 320 characters long.');
       expect(errors[1].textContent?.trim()).toBe('The title must be at most 320 characters long.');
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       fixture.detectChanges();
@@ -350,23 +334,10 @@ describe('article-listing-monaco-editor.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -374,13 +345,11 @@ describe('article-listing-monaco-editor.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -399,13 +368,11 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       const undo = xButtons[1];
       expect(undo.textContent?.trim()).toBe('Undo');
       dispatchMouseEvent(undo, 'click');
-
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -430,13 +397,11 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       const close = xButtons[2];
       expect(close.textContent?.trim()).toBe('Close');
       dispatchMouseEvent(close, 'click');
-
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -475,23 +440,10 @@ describe('article-listing-monaco-editor.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -499,13 +451,11 @@ describe('article-listing-monaco-editor.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -541,7 +491,6 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       const submit = xButtons[3];
@@ -571,7 +520,6 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       const submit = xButtons[2];
@@ -615,23 +563,10 @@ describe('article-listing-monaco-editor.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -639,13 +574,11 @@ describe('article-listing-monaco-editor.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -664,7 +597,6 @@ describe('article-listing-monaco-editor.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       const submit = xButtons[3];
@@ -708,23 +640,10 @@ describe('article-listing-monaco-editor.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ArticleListingComponent]
-      }).compileComponents();
-
+      compileComponents();
       const h = createHelpComponent();
       helpFixture = h.helpFixture;
       helpComponent = h.helpComponent;
@@ -732,13 +651,11 @@ describe('article-listing-monaco-editor.component', () => {
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
       const c = createComponent(overlayContainer);
       fixture = c.fixture;
@@ -775,13 +692,11 @@ describe('article-listing-monaco-editor.component', () => {
     beforeEach(waitForAsync(() => {
       helpComponent.setNeedsRefreshToken();
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(5);
       const submit = xButtons[3];
       expect(submit.textContent?.trim()).toBe('Submit');
       dispatchMouseEvent(submit, 'click');
-
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -880,7 +795,8 @@ describe('article-listing-monaco-editor.component', () => {
 });
 
 @Component({
-  template: ``
+  template: ``,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TestHelpComponent implements OnDestroy {
   readonly #authStore = inject(AuthStore);

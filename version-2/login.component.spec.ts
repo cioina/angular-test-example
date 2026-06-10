@@ -4,7 +4,7 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, ChangeDetectionStrategy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
@@ -25,6 +25,26 @@ import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 import LoginComponent from './login.component';
 import { environment } from '../../environments/environment';
 
+function compileComponents(): void {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+      provideNzIconsTesting(),
+      provideNzNoAnimation(),
+      provideComponentStore(AuthStore),
+      NzDrawerService
+    ],
+    imports: [TestHelpComponent, LoginComponent]
+  }).compileComponents();
+}
+
+function jasmineTimeoutInterval(n: number): number {
+  localStorage.clear();
+  const i = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = n;
+  return i;
+}
+
 const statusMap = {
   warning: 'ant-form-item-has-warning',
   validating: 'ant-form-item-is-validating',
@@ -41,17 +61,7 @@ describe('login.component', () => {
 
     beforeEach(() => {
       localStorage.clear();
-
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [LoginComponent]
-      }).compileComponents();
+      compileComponents();
 
       fixture = TestBed.createComponent(LoginComponent);
       component = fixture.componentInstance;
@@ -155,22 +165,11 @@ describe('login.component', () => {
     let helpFixture: ComponentFixture<TestHelpComponent>;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
 
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, LoginComponent]
-      }).compileComponents();
+      compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
       helpComponent = helpFixture.componentInstance;
@@ -235,22 +234,11 @@ describe('login.component', () => {
     let formGroup: FormGroup;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
 
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, LoginComponent]
-      }).compileComponents();
+      compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
       helpComponent = helpFixture.componentInstance;
@@ -350,7 +338,8 @@ describe('login.component', () => {
 });
 
 @Component({
-  template: ``
+  template: ``,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);

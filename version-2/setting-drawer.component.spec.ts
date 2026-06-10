@@ -30,7 +30,6 @@ describe('setting-drawer.component', () => {
       TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
       jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
     });
-
     beforeEach(waitForAsync(() => {
       TestBed.configureTestingModule({
         providers: [
@@ -43,7 +42,6 @@ describe('setting-drawer.component', () => {
         imports: [SettingDrawerComponent]
       }).compileComponents();
     }));
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
@@ -54,12 +52,9 @@ describe('setting-drawer.component', () => {
       fixture = TestBed.createComponent(SettingDrawerComponent);
       component = fixture.componentInstance;
       fixture.detectChanges();
-
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
-
       const buttons = fixture.debugElement.queryAll(By.css('.anticon'));
       expect(buttons.length).toBe(7);
-
       const buttonElement = buttons[0].nativeElement;
       buttonElement.classList.contains('anticon-setting');
       buttonElement.click();
@@ -74,10 +69,8 @@ describe('setting-drawer.component', () => {
       expect(
         overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
       ).toBe(true);
-
       component.changeStyleTheme('dark');
       fixture.detectChanges();
-
       component.changeTheme({
         key: 'light',
         image: 'assets/imgs/theme-light.svg',
@@ -85,7 +78,6 @@ describe('setting-drawer.component', () => {
         isChecked: false
       });
       fixture.detectChanges();
-
       component.changeMode({
         key: 'top',
         image: 'assets/imgs/menu-side.svg',
@@ -93,7 +85,6 @@ describe('setting-drawer.component', () => {
         isChecked: true
       });
       fixture.detectChanges();
-
       component.changeTheme({
         key: 'dark',
         image: 'assets/imgs/menu-side.svg',
@@ -101,7 +92,6 @@ describe('setting-drawer.component', () => {
         isChecked: true
       });
       fixture.detectChanges();
-
       component.changePrimaryColor({
         key: 'green',
         color: '#52C41A',
@@ -109,22 +99,16 @@ describe('setting-drawer.component', () => {
         isChecked: false
       });
       fixture.detectChanges();
-
       component.changeThemeOptions(false, 'isShowTab');
       fixture.detectChanges();
-
       component.changeThemeOptions(false, 'fixedHead');
       fixture.detectChanges();
-
       component.changeSpecialTheme(true, 'color-weak');
       fixture.detectChanges();
-
       component.changeSpecialTheme(true, 'grey-theme');
       fixture.detectChanges();
-
       component.resetMenuSettingsToDefault();
       fixture.detectChanges();
-
       component.dragging = true;
       component.changeCollapsed();
       fixture.detectChanges();

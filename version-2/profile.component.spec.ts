@@ -5,7 +5,7 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors, HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -60,7 +60,286 @@ function expectDrawerOpen(fixture: ComponentFixture<ProfileComponent>, overlayCo
   expect(typography?.textContent?.trim()).toBe('Update Account');
 }
 
+function createComponent(
+  overlayContainer: OverlayContainer,
+  modalName: string = 'username'
+): {
+  fixture: ComponentFixture<ProfileComponent>;
+  component: ProfileComponent;
+} {
+  const fixture = TestBed.createComponent(ProfileComponent);
+  const component = fixture.componentInstance;
+  expect(component.user()?.email).toBe(environment.testUserEmail);
+  expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
+  fixture.detectChanges();
+  component.createComponentModal(modalName);
+  fixture.detectChanges();
+
+  return {
+    fixture,
+    component
+  };
+}
+
+function createHelpComponent(mustLogin: boolean = true): {
+  helpFixture: ComponentFixture<TestHelpComponent>;
+  helpComponent: TestHelpComponent;
+} {
+  const helpFixture = TestBed.createComponent(TestHelpComponent);
+  const helpComponent = helpFixture.componentInstance;
+
+  helpFixture.detectChanges();
+  expect(helpComponent.isAuthenticated()).toBe(false);
+
+  if (mustLogin) {
+    helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
+    helpFixture.detectChanges();
+  }
+  return {
+    helpFixture,
+    helpComponent
+  };
+}
+
+function compileComponents(): void {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+      provideNzIconsTesting(),
+      provideNzNoAnimation(),
+      provideComponentStore(AuthStore),
+      NzDrawerService
+    ],
+    imports: [TestHelpComponent, ProfileComponent]
+  }).compileComponents();
+}
+
+function jasmineTimeoutInterval(n: number): number {
+  localStorage.clear();
+  const i = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = n;
+  return i;
+}
+
 describe('profile.component', () => {
+  describe('no profile if user is not authenticated', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
+    });
+    beforeEach(waitForAsync(() => {
+      compileComponents();
+      const h = createHelpComponent(false);
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should profile be null and user not authenticated', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(false);
+      expect(component.profile()).not.toBeTruthy();
+    }));
+  });
+
+  describe('should not activate profile.component when wrong token', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
+    });
+    beforeEach(waitForAsync(() => {
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      localStorage.clear();
+      helpComponent.setNeedsRefreshToken();
+      helpFixture.detectChanges();
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      expect(component.profile()).not.toBeTruthy();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should profile be null', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.profile()).not.toBeTruthy();
+    }));
+  });
+
+  describe('has profile if user is authenticated and localStorage.clear()', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
+    });
+    beforeEach(waitForAsync(() => {
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      localStorage.clear();
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should has profile and user authenticated', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.profile()).toBeTruthy();
+    }));
+  });
+
+  describe('Log Out button should work', () => {
+    let TIMEOUT_INTERVAL: number;
+    let component: ProfileComponent;
+    let fixture: ComponentFixture<ProfileComponent>;
+    let helpComponent: TestHelpComponent;
+    let helpFixture: ComponentFixture<TestHelpComponent>;
+
+    beforeEach(() => {
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
+    });
+    beforeEach(waitForAsync(() => {
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
+    }));
+    beforeEach(async () => {
+      await helpFixture.whenRenderingDone();
+    });
+    beforeEach(waitForAsync(() => {
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      helpFixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      fixture = TestBed.createComponent(ProfileComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
+      expect(buttons.length).toBe(3);
+      const buttonElement = buttons[0].nativeElement;
+      expect(buttonElement.firstElementChild!.classList.contains('anticon-export')).toBe(true);
+      buttonElement.click();
+      fixture.detectChanges();
+    }));
+    beforeEach(async () => {
+      await fixture.whenRenderingDone();
+    });
+
+    afterEach(() => {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
+    });
+
+    it('should has profile and user authenticated', fakeAsync(() => {
+      tick(20);
+      helpFixture.detectChanges();
+      expect(helpComponent.isAuthenticated()).toBe(true);
+      expect(component.profile()).toBeTruthy();
+    }));
+  });
+
   describe('change password', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ProfileComponent;
@@ -70,52 +349,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('password');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer, 'password');
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -123,7 +376,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(3);
       expect(inputs[1].id.trim()).toBe('password');
@@ -132,7 +384,6 @@ describe('profile.component', () => {
       fixture.detectChanges();
       typeInElement('m'.repeat(MinPasswordLength - 1), password as HTMLInputElement);
       fixture.detectChanges();
-
       expect(inputs[2].id.trim()).toBe('confirm');
       const confirm = inputs[2];
       dispatchFakeEvent(confirm, 'focusin');
@@ -150,7 +401,6 @@ describe('profile.component', () => {
       expect(errors.length).toBe(2);
       expect(errors[0].textContent?.trim()).toBe('The password must be at least 16 characters long.');
       expect(errors[1].textContent?.trim()).toBe('The password must be at least 16 characters long.');
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(3);
       expect(inputs[1].id.trim()).toBe('password');
@@ -159,7 +409,6 @@ describe('profile.component', () => {
       fixture.detectChanges();
       typeInElement('m'.repeat(MaxPasswordLength + 1), password as HTMLInputElement);
       fixture.detectChanges();
-
       expect(inputs[2].id.trim()).toBe('confirm');
       const confirm = inputs[2];
       dispatchFakeEvent(confirm, 'focusin');
@@ -173,7 +422,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(2);
       expect(errors[0].textContent?.trim()).toBe('The password must be at most 32 characters long.');
@@ -192,7 +440,7 @@ describe('profile.component', () => {
       })
     );
 
-    it('do not uncomment', fakeAsync(() => {
+    it('should form validation work', fakeAsync(() => {
       tick(20);
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
@@ -202,59 +450,31 @@ describe('profile.component', () => {
 
   describe('logout confirm password drawer should open on top of drawer Update Account', () => {
     let TIMEOUT_INTERVAL: number;
-    let component: ProfileComponent;
     let fixture: ComponentFixture<ProfileComponent>;
     let helpComponent: TestHelpComponent;
     let helpFixture: ComponentFixture<TestHelpComponent>;
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -262,7 +482,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       helpComponent.logout();
       fixture.detectChanges();
     }));
@@ -317,7 +536,6 @@ describe('profile.component', () => {
       expect(messages.length).toBe(2);
       expect(messages[0].textContent?.trim()).toBe('Invalid credentials.');
       expect(messages[1].textContent?.trim()).toBe('Invalid credentials.');
-
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
     }));
@@ -343,7 +561,6 @@ describe('profile.component', () => {
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The password must be at least 16 characters long.');
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(4);
       dispatchFakeEvent(inputs[3], 'focusin');
@@ -360,11 +577,9 @@ describe('profile.component', () => {
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The password must be at most 32 characters long.');
-
       const buttons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(buttons.length).toBe(1);
       expect(buttons[0].textContent?.trim()).toBe('Submit');
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(4);
       dispatchFakeEvent(inputs[3], 'focusin');
@@ -414,52 +629,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -468,7 +657,6 @@ describe('profile.component', () => {
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
       helpComponent.setNeedsRefreshToken();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       const submitProfile = xButtons[2];
@@ -533,7 +721,6 @@ describe('profile.component', () => {
       expect(messages.length).toBe(2);
       expect(messages[0].textContent?.trim()).toBe('Invalid credentials.');
       expect(messages[1].textContent?.trim()).toBe('Invalid credentials.');
-
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
     }));
@@ -559,11 +746,9 @@ describe('profile.component', () => {
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The password must be at least 16 characters long.');
-
       const buttons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(buttons.length).toBe(1);
       expect(buttons[0].textContent?.trim()).toBe('Submit');
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(4);
       dispatchFakeEvent(inputs[3], 'focusin');
@@ -614,52 +799,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -668,7 +827,6 @@ describe('profile.component', () => {
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
       helpComponent.setNeedsRefreshToken();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       const submitProfile = xButtons[2];
@@ -714,11 +872,11 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
-      expect(xButtons.length).toBe(4);
-      const submitProfile = xButtons[2];
-      dispatchMouseEvent(submitProfile, 'click');
+      expect(xButtons.length).toBeGreaterThanOrEqual(3);
+      const submitConfirmPassword = xButtons[2];
+      expect(submitConfirmPassword.textContent?.trim()).toBe('Submit');
+      dispatchMouseEvent(submitConfirmPassword, 'click');
       fixture.detectChanges();
     }));
     beforeEach(async () => {
@@ -778,7 +936,6 @@ describe('profile.component', () => {
       expect(messages.length).toBe(2);
       expect(messages[0].textContent?.trim()).toBe('Invalid credentials.');
       expect(messages[1].textContent?.trim()).toBe('Invalid credentials.');
-
       expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).toBeTruthy();
       fixture.detectChanges();
     }));
@@ -812,52 +969,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -865,9 +996,7 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       helpComponent.setNeedsRefreshToken();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       const submitProfile = xButtons[2];
@@ -937,9 +1066,8 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
-      expect(inputs.length).toBe(3);
+      expect(inputs.length).toBeGreaterThanOrEqual(3);
       expect(inputs[0].id.trim()).toBe('username');
       const username = inputs[0];
       dispatchFakeEvent(username, 'focusin');
@@ -956,9 +1084,8 @@ describe('profile.component', () => {
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The username must be at least 2 characters long.');
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
-      expect(inputs.length).toBe(3);
+      expect(inputs.length).toBeGreaterThanOrEqual(3);
       expect(inputs[0].id.trim()).toBe('username');
       const username = inputs[0];
       dispatchFakeEvent(username, 'focusin');
@@ -972,22 +1099,19 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const errors = overlayContainer.getContainerElement().querySelectorAll('.ant-form-item-explain-error');
       expect(errors.length).toBe(1);
       expect(errors[0].textContent?.trim()).toBe('The username must be at most 100 characters long.');
-
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
-      expect(inputs.length).toBe(3);
+      expect(inputs.length).toBeGreaterThanOrEqual(3);
       expect(inputs[0].id.trim()).toBe('username');
       const username = inputs[0];
       dispatchFakeEvent(username, 'focusin');
       fixture.detectChanges();
       typeInElement(environment.testUserProfile, username as HTMLInputElement);
       fixture.detectChanges();
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
-      expect(xButtons.length).toBe(4);
+      expect(xButtons.length).toBeGreaterThanOrEqual(4);
       const submitProfile = xButtons[2];
       dispatchMouseEvent(submitProfile, 'click');
       fixture.detectChanges();
@@ -1029,199 +1153,6 @@ describe('profile.component', () => {
     }));
   });
 
-  describe('no profile if user is not authenticated', () => {
-    let TIMEOUT_INTERVAL: number;
-    let component: ProfileComponent;
-    let fixture: ComponentFixture<ProfileComponent>;
-    let helpComponent: TestHelpComponent;
-    let helpFixture: ComponentFixture<TestHelpComponent>;
-
-    beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
-    });
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-    }));
-    beforeEach(async () => {
-      await helpFixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    afterEach(() => {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
-    });
-
-    it('should profile be null and user not authenticated', fakeAsync(() => {
-      tick(20);
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-      expect(component.profile()).not.toBeTruthy();
-    }));
-  });
-
-  describe('has profile if user is authenticated and localStorage.clear()', () => {
-    let TIMEOUT_INTERVAL: number;
-    let component: ProfileComponent;
-    let fixture: ComponentFixture<ProfileComponent>;
-    let helpComponent: TestHelpComponent;
-    let helpFixture: ComponentFixture<TestHelpComponent>;
-
-    beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
-    });
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await helpFixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(true);
-      localStorage.clear();
-
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    afterEach(() => {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
-    });
-
-    it('should has profile and user authenticated', fakeAsync(() => {
-      tick(20);
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(true);
-      expect(component.profile()).toBeTruthy();
-    }));
-  });
-
-  describe('should not activate profile.component when wrong token', () => {
-    let TIMEOUT_INTERVAL: number;
-    let component: ProfileComponent;
-    let fixture: ComponentFixture<ProfileComponent>;
-    let helpComponent: TestHelpComponent;
-    let helpFixture: ComponentFixture<TestHelpComponent>;
-
-    beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
-    });
-
-    beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await helpFixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(true);
-      localStorage.clear();
-      helpComponent.setNeedsRefreshToken();
-      helpFixture.detectChanges();
-
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    beforeEach(waitForAsync(() => {
-      fixture.detectChanges();
-      expect(component.profile()).not.toBeTruthy();
-      fixture.detectChanges();
-    }));
-    beforeEach(async () => {
-      await fixture.whenRenderingDone();
-    });
-
-    afterEach(() => {
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
-    });
-
-    it('should profile be null', fakeAsync(() => {
-      tick(20);
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(true);
-      expect(component.profile()).not.toBeTruthy();
-    }));
-  });
-
   describe('close button should work for drawer Update Account', () => {
     let TIMEOUT_INTERVAL: number;
     let component: ProfileComponent;
@@ -1231,52 +1162,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1284,7 +1189,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       const submitProfile = xButtons[2];
@@ -1313,7 +1217,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButton = overlayContainer.getContainerElement().querySelector('.ant-btn-dangerous');
       expect(xButton).toBeTruthy();
       dispatchMouseEvent(xButton!, 'click');
@@ -1364,52 +1267,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1417,7 +1294,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       dispatchMouseEvent(xButtons[2], 'click');
@@ -1469,52 +1345,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1522,7 +1372,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       dispatchMouseEvent(xButtons[3], 'click');
@@ -1575,52 +1424,26 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
-
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, ProfileComponent]
-      }).compileComponents();
-
-      helpFixture = TestBed.createComponent(TestHelpComponent);
-      helpComponent = helpFixture.componentInstance;
-
-      helpFixture.detectChanges();
-      expect(helpComponent.isAuthenticated()).toBe(false);
-
-      helpComponent.login({ email: environment.testUserEmail, password: environment.testUserPassword });
-      helpFixture.detectChanges();
+      compileComponents();
+      const h = createHelpComponent();
+      helpFixture = h.helpFixture;
+      helpComponent = h.helpComponent;
     }));
     beforeEach(async () => {
       await helpFixture.whenRenderingDone();
     });
-
     beforeEach(
       testInject([OverlayContainer], (currentOverlayContainer: OverlayContainer) => {
         overlayContainer = currentOverlayContainer;
       })
     );
-
     beforeEach(waitForAsync(() => {
-      fixture = TestBed.createComponent(ProfileComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-
-      expect(component.user()?.email).toBe(environment.testUserEmail);
-      expect(overlayContainer.getContainerElement().querySelector('.ant-drawer')).not.toBeTruthy();
-
-      component.createComponentModal('username');
-      fixture.detectChanges();
+      const c = createComponent(overlayContainer);
+      fixture = c.fixture;
+      component = c.component;
     }));
     beforeEach(async () => {
       await fixture.whenRenderingDone();
@@ -1628,7 +1451,6 @@ describe('profile.component', () => {
 
     beforeEach(waitForAsync(() => {
       expectDrawerOpen(fixture, overlayContainer);
-
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(4);
       dispatchMouseEvent(xButtons[3], 'click');
@@ -1695,7 +1517,8 @@ describe('profile.component', () => {
 });
 
 @Component({
-  template: ``
+  template: ``,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);

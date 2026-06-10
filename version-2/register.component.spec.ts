@@ -5,7 +5,7 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, DebugElement } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, DebugElement, ChangeDetectionStrategy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
@@ -54,6 +54,26 @@ function clickYes(fixture: ComponentFixture<RegisterComponent>, overlayContainer
   fixture.detectChanges();
 }
 
+function compileComponents(): void {
+  TestBed.configureTestingModule({
+    providers: [
+      provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
+      provideNzIconsTesting(),
+      provideNzNoAnimation(),
+      provideComponentStore(AuthStore),
+      NzDrawerService
+    ],
+    imports: [TestHelpComponent, RegisterComponent]
+  }).compileComponents();
+}
+
+function jasmineTimeoutInterval(n: number): number {
+  localStorage.clear();
+  const i = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = n;
+  return i;
+}
+
 describe('register.component', () => {
   describe('reactive register.component status', () => {
     let component: RegisterComponent;
@@ -62,17 +82,7 @@ describe('register.component', () => {
 
     beforeEach(() => {
       localStorage.clear();
-
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [RegisterComponent]
-      }).compileComponents();
+      compileComponents();
 
       fixture = TestBed.createComponent(RegisterComponent);
       component = fixture.componentInstance;
@@ -247,22 +257,11 @@ describe('register.component', () => {
     let buttons: DebugElement[];
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
 
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [RegisterComponent]
-      }).compileComponents();
+      compileComponents();
 
       fixture = TestBed.createComponent(RegisterComponent);
       component = fixture.componentInstance;
@@ -349,22 +348,11 @@ describe('register.component', () => {
     let buttons: DebugElement[];
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
 
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, RegisterComponent]
-      }).compileComponents();
+      compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
       helpComponent = helpFixture.componentInstance;
@@ -526,22 +514,11 @@ describe('register.component', () => {
     let buttons: DebugElement[];
 
     beforeEach(() => {
-      localStorage.clear();
-      TIMEOUT_INTERVAL = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-      jasmine.DEFAULT_TIMEOUT_INTERVAL = 12000;
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
     });
 
     beforeEach(waitForAsync(() => {
-      TestBed.configureTestingModule({
-        providers: [
-          provideHttpClient(withInterceptors([apiPrefixInterceptor, authInterceptor])),
-          provideNzIconsTesting(),
-          provideNzNoAnimation(),
-          provideComponentStore(AuthStore),
-          NzDrawerService
-        ],
-        imports: [TestHelpComponent, RegisterComponent]
-      }).compileComponents();
+      compileComponents();
 
       helpFixture = TestBed.createComponent(TestHelpComponent);
       helpComponent = helpFixture.componentInstance;
@@ -627,7 +604,8 @@ describe('register.component', () => {
 });
 
 @Component({
-  template: ``
+  template: ``,
+  changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
