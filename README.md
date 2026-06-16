@@ -5,14 +5,14 @@
 ## Introduction
 
 [Our Angular app](https://cioina.azurewebsites.net/) Is based on [ng-antd-admin](https://github.com/huajian123/ng-antd-admin) combined with [angular-conduit-signals](https://github.com/AndyT2503/angular-conduit-signals). In addition, we use following Angular libraries direct form sources: [NG-ZORRO components src](https://github.com/NG-ZORRO/ng-zorro-antd/tree/master/components), [icons-angular src](https://github.com/ant-design/ant-design-icons/tree/master/packages/icons-angular/src) and [component-store src](https://github.com/ngrx/platform/tree/main/modules/component-store/src) with some minor changes. All our reactive states look similar to [auth.store.ts](https://github.com/AndyT2503/angular-conduit-signals/blob/dev/src/app/shared/store/auth.store.ts)
-The app communicates with the server via REST API controllers built on top of .NET Core 9. The compiled bin code is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net9.0) together with [compiled Angular app](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net9.0/wwwroot)
+The app communicates with the server via REST API controllers built on top of .NET Core 10. The compiled bin code is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net10.0) together with [compiled Angular app](https://github.com/cioina/cioina.azurewebsites.net/tree/main/bin/Release/net9.0/wwwroot)
 
 ## Testing tools for Angular
 
 We use the same tools/packages as in [NG-ZORRO](https://github.com/NG-ZORRO/ng-zorro-antd/blob/master/package.json), which are the same as in [TEST_DEPS](https://github.com/angular/angular/blob/main/adev/BUILD.bazel) plus `puppeteer`. In addition, Angular and NG-ZORRO have a lot of classes and functions ready to use right out of the box:
 
 ```javascript
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { dispatchMouseEvent, dispatchFakeEvent, typeInElement } from 'ng-zorro-antd/core/testing';
 import { provideNzIconsTesting } from 'ng-zorro-antd/icon/testing';
 ```
