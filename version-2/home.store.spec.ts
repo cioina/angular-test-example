@@ -4,9 +4,9 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
 import { ErrorResponse, Tag, TagFilter } from '@app/shared/models';
@@ -84,13 +84,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return articles and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return articles and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).not.toBe(0);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 2', () => {
@@ -120,13 +119,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return zero articles and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return zero articles and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(0);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 3', () => {
@@ -156,13 +154,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return one article and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(1);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 4', () => {
@@ -192,13 +189,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return rest articles and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return rest articles and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(helpComponent.articleCount() - 1);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 5', () => {
@@ -229,13 +225,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 2 articles and total equals 2', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 2 articles and total equals 2', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(2);
       expect(helpComponent.articleCount()).toBe(2);
-    }));
+    });
   });
 
   describe('queryArticle function 6', () => {
@@ -266,13 +261,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return zero articles and total equals zero', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return zero articles and total equals zero', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(0);
       expect(helpComponent.articleCount()).toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 7', () => {
@@ -304,13 +298,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 2 articles and total equals 2 and ignore published', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 2 articles and total equals 2 and ignore published', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(2);
       expect(helpComponent.articleCount()).toBe(2);
-    }));
+    });
   });
 
   describe('queryArticle function 8', () => {
@@ -343,13 +336,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 2 article and total eqiuals 2 descending', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 2 article and total eqiuals 2 descending', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(2);
       expect(helpComponent.articleCount()).toBe(2);
-    }));
+    });
   });
 
   describe('queryArticle function 9', () => {
@@ -379,13 +371,12 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return error', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(0);
       expect(helpComponent.articleCount()).toBe(0);
-    }));
+    });
   });
 
   describe('onOffsetChange function 1', () => {
@@ -427,14 +418,13 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 0 articles and total equals 2', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 0 articles and total equals 2', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(0);
       expect(helpComponent.articleCount()).toBe(2);
       expect(helpComponent.authStoreErrors?.length).toBe(0);
-    }));
+    });
   });
 
   describe('onLimitChange function 1', () => {
@@ -476,14 +466,13 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 1 articles and total equals 2', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 1 articles and total equals 2', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.articleList()?.length).toBe(1);
       expect(helpComponent.articleCount()).toBe(2);
       expect(helpComponent.authStoreErrors?.length).toBe(0);
-    }));
+    });
   });
 
   describe('getTags function 1', () => {
@@ -510,12 +499,11 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getTags return one tag', fakeAsync(() => {
-      tick(20);
+    it('should getTags return one tag', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.tags()?.length).toBe(1);
-    }));
+    });
   });
 
   describe('getTags function 2', () => {
@@ -542,12 +530,11 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getTags return no tags', fakeAsync(() => {
-      tick(20);
+    it('should getTags return no tags', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.tags()?.length).toBe(0);
-    }));
+    });
   });
 
   describe('getTags function 3', () => {
@@ -574,12 +561,11 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getTags return error', fakeAsync(() => {
-      tick(20);
+    it('should getTags return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.tags()?.length).toBe(0);
-    }));
+    });
   });
 
   describe('getTags function 4', () => {
@@ -606,12 +592,11 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getTags return all tags', fakeAsync(() => {
-      tick(20);
+    it('should getTags return all tags', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.tags()?.length).not.toBe(0);
-    }));
+    });
   });
 
   describe('tagsChanged', () => {
@@ -648,18 +633,16 @@ describe('home.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should call getTags twice return tagsChanged = true', fakeAsync(() => {
-      tick(20);
+    it('should call getTags twice return tagsChanged = true', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.tagsChanged).toBe(true);
-    }));
+    });
   });
 });
 
 @Component({
   template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [provideComponentStore(HomeStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {

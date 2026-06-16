@@ -4,9 +4,9 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 
 import {
@@ -99,8 +99,7 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should patchValue return form validation required errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation required errors', () => {
       helpComponent.registerForm.patchValue({ email: '', username: '', password: '', confirm: '' });
       helpFixture.detectChanges();
       const email = helpComponent.registerForm.get('email')!.errors;
@@ -115,10 +114,9 @@ describe('auth.store', () => {
       expect(username!.required).toBe(true);
       expect(password!.required).toBeTruthy(true);
       expect(confirm!.required).toBe(true);
-    }));
+    });
 
-    it('should patchValue return form validation min errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation min errors', () => {
       helpComponent.registerForm.patchValue({ email: 'a@', username: 'a', password: 'a', confirm: 'a' });
       helpFixture.detectChanges();
       const email = helpComponent.registerForm.get('email')!.errors;
@@ -133,16 +131,15 @@ describe('auth.store', () => {
       expect(username!.min).toBe(true);
       expect(password!.min).toBeTruthy(true);
       expect(confirm!.min).toBe(true);
-    }));
+    });
 
-    it('should patchValue return form validation email errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation email errors', () => {
       helpComponent.registerForm.patchValue({ email: 'notValidEmail', password: '' });
       helpFixture.detectChanges();
       const email = helpComponent.registerForm.get('email')!.errors;
       expect(email).toBeTruthy();
       expect(email!.email).toBe(true);
-    }));
+    });
   });
 
   describe('userForm validation errors', () => {
@@ -167,8 +164,7 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should patchValue return form validation required errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation required errors', () => {
       helpComponent.userForm.patchValue({ username: '', password: '', confirm: '' });
       helpFixture.detectChanges();
       const username = helpComponent.userForm.get('username')!.errors;
@@ -180,10 +176,9 @@ describe('auth.store', () => {
       expect(username!.required).toBe(true);
       expect(password!.required).toBeTruthy(true);
       expect(confirm!.required).toBe(true);
-    }));
+    });
 
-    it('should patchValue return form validation min errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation min errors', () => {
       helpComponent.userForm.patchValue({ username: 'a', password: 'a', confirm: 'a' });
       helpFixture.detectChanges();
       const username = helpComponent.userForm.get('username')!.errors;
@@ -195,7 +190,7 @@ describe('auth.store', () => {
       expect(username!.min).toBe(true);
       expect(password!.min).toBeTruthy(true);
       expect(confirm!.min).toBe(true);
-    }));
+    });
   });
 
   describe('loginForm validation errors', () => {
@@ -220,8 +215,7 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should patchValue return form validation required errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation required errors', () => {
       helpComponent.loginForm.patchValue({ email: '', password: '' });
       helpFixture.detectChanges();
       const email = helpComponent.loginForm.get('email')!.errors;
@@ -230,10 +224,9 @@ describe('auth.store', () => {
       expect(password).toBeTruthy();
       expect(email!.required).toBe(true);
       expect(password!.required).toBeTruthy(true);
-    }));
+    });
 
-    it('should patchValue return form validation min errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation min errors', () => {
       helpComponent.loginForm.patchValue({ email: 'a@', password: 'a' });
       helpFixture.detectChanges();
       const email = helpComponent.loginForm.get('email')!.errors;
@@ -242,16 +235,15 @@ describe('auth.store', () => {
       expect(password).toBeTruthy();
       expect(email!.min).toBe(true);
       expect(password!.min).toBeTruthy(true);
-    }));
+    });
 
-    it('should patchValue return form validation email errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation email errors', () => {
       helpComponent.loginForm.patchValue({ email: 'notValidEmail', password: '' });
       helpFixture.detectChanges();
       const email = helpComponent.loginForm.get('email')!.errors;
       expect(email).toBeTruthy();
       expect(email!.email).toBe(true);
-    }));
+    });
   });
 
   describe('passwordForm validation errors', () => {
@@ -276,23 +268,21 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should patchValue return form validation required errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation required errors', () => {
       helpComponent.passwordForm.patchValue({ password: '' });
       helpFixture.detectChanges();
       const password = helpComponent.passwordForm.get('password')!.errors;
       expect(password).toBeTruthy();
       expect(password!.required).toBeTruthy(true);
-    }));
+    });
 
-    it('should patchValue return form validation min errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation min errors', () => {
       helpComponent.passwordForm.patchValue({ password: 'a' });
       helpFixture.detectChanges();
       const password = helpComponent.passwordForm.get('password')!.errors;
       expect(password).toBeTruthy();
       expect(password!.min).toBeTruthy(true);
-    }));
+    });
   });
 
   describe('setVersionWidthSwitcher', () => {
@@ -319,11 +309,10 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should incompleteCoverageTest work', fakeAsync(() => {
-      tick(20);
+    it('should incompleteCoverageTest work', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
-    }));
+    });
   });
 
   describe('loginPassword function', () => {
@@ -369,12 +358,11 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should user be authenticated', fakeAsync(() => {
-      tick(20);
+    it('should user be authenticated', () => {
       helpFixture.detectChanges();
       expect(helpComponent.passwordForm.get('password')!.errors).not.toBeTruthy();
       expect(helpComponent.isAuthenticated()).toBe(true);
-    }));
+    });
   });
 
   describe('login function', () => {
@@ -399,13 +387,12 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should user be authenticated', fakeAsync(() => {
-      tick(20);
+    it('should user be authenticated', () => {
       helpFixture.detectChanges();
       expect(helpComponent.loginForm.get('email')!.errors).not.toBeTruthy();
       expect(helpComponent.loginForm.get('password')!.errors).not.toBeTruthy();
       expect(helpComponent.isAuthenticated()).toBe(true);
-    }));
+    });
   });
 
   describe('updateUser function', () => {
@@ -443,15 +430,14 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should updateUser return error', fakeAsync(() => {
-      tick(20);
+    it('should updateUser return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.userForm.get('username')!.errors).not.toBeTruthy();
       expect(helpComponent.userForm.get('password')!.errors).not.toBeTruthy();
       expect(helpComponent.userForm.get('confirm')!.errors).not.toBeTruthy();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.errors[0]).toBe(`The user name has been taken.`);
-    }));
+    });
   });
 
   describe('register function', () => {
@@ -490,8 +476,7 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should register return error', fakeAsync(() => {
-      tick(20);
+    it('should register return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.registerForm.get('email')!.errors).not.toBeTruthy();
       expect(helpComponent.registerForm.get('username')!.errors).not.toBeTruthy();
@@ -499,7 +484,7 @@ describe('auth.store', () => {
       expect(helpComponent.registerForm.get('confirm')!.errors).not.toBeTruthy();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.errors[0]).toBe(`The email has been taken.`);
-    }));
+    });
   });
 
   describe('setNeedsRefreshToken', () => {
@@ -535,18 +520,16 @@ describe('auth.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should not setNeedsRefreshToken return error', fakeAsync(() => {
-      tick(20);
+    it('should not setNeedsRefreshToken return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.errors.length).toBe(0);
-    }));
+    });
   });
 });
 
 @Component({
-  template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager
+  template: ``
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);

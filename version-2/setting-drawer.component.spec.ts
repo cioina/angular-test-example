@@ -5,7 +5,7 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
@@ -130,9 +130,8 @@ describe('setting-drawer.component', () => {
       })
     );
 
-    it('should get 100% coverage-report', fakeAsync(() => {
-      tick(20);
+    it('should get 100% coverage-report', () => {
       fixture.detectChanges();
-    }));
+    });
   });
 });

@@ -5,9 +5,9 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, DebugElement, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, DebugElement } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -326,14 +326,13 @@ describe('register.component', () => {
       })
     );
 
-    it('should click reset button clear all form controls ', fakeAsync(() => {
-      tick(20);
+    it('should click reset button clear all form controls ', () => {
       fixture.detectChanges();
       expect(formGroup.get('username')!.value).not.toBe('username1');
       expect(formGroup.get('email')!.value).not.toBe('email@server');
       expect(formGroup.get('password')!.value).not.toBe(environment.testUserPassword);
       expect(formGroup.get('confirm')!.value).not.toBe(environment.testUserPassword);
-    }));
+    });
   });
 
   describe('submit button should work', () => {
@@ -489,8 +488,7 @@ describe('register.component', () => {
       })
     );
 
-    it('should click submit button return success (not implemented)', fakeAsync(() => {
-      tick(20);
+    it('should click submit button return success (not implemented)', () => {
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('Register is not implemented yet.');
 
@@ -499,7 +497,7 @@ describe('register.component', () => {
       expect(formGroup.get('email')!.value).toBe('email@server');
       expect(formGroup.get('password')!.value).toBe(environment.testUserPassword);
       expect(formGroup.get('confirm')!.value).toBe(environment.testUserPassword);
-    }));
+    });
   });
 
   describe('submit button should return validation error', () => {
@@ -589,8 +587,7 @@ describe('register.component', () => {
       })
     );
 
-    it('should click submit button return error', fakeAsync(() => {
-      tick(20);
+    it('should click submit button return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('The email has been taken.');
 
@@ -599,13 +596,12 @@ describe('register.component', () => {
       expect(formGroup.get('email')!.value).toBe(environment.testUserEmail);
       expect(formGroup.get('password')!.value).toBe(environment.testUserPassword);
       expect(formGroup.get('confirm')!.value).toBe(environment.testUserPassword);
-    }));
+    });
   });
 });
 
 @Component({
-  template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager
+  template: ``
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);

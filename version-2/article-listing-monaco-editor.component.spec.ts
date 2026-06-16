@@ -6,7 +6,7 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -46,7 +46,7 @@ function clickMonacoEditor(
   expect(component.articleList().length).not.toBe(0);
   expect(component.tagList().length).not.toBe(0);
   const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-  expect(buttons.length).not.toBe(0);
+  expect(buttons.length).toBeGreaterThanOrEqual(6);
   buttons[5].nativeElement.click();
   fixture.detectChanges();
 }
@@ -93,7 +93,7 @@ function expectDrawerOpen(
     overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
   ).toBe(true);
   const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-  expect(buttons.length).not.toBe(0);
+  expect(buttons.length).toBeGreaterThanOrEqual(3);
   expect(buttons[2].nativeElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
   const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
@@ -181,12 +181,11 @@ describe('article-listing-monaco-editor.component', () => {
       })
     );
 
-    it('should retrun Timeout - Async function did not complete within 12000ms', fakeAsync(() => {
-      tick(20);
+    it('should retrun Timeout - Async function did not complete within 12000ms', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('Monaco Editor form validation should work for drawer Edit Article', () => {
@@ -317,12 +316,11 @@ describe('article-listing-monaco-editor.component', () => {
       })
     );
 
-    it('should form textarea validation work', fakeAsync(() => {
-      tick(20);
+    it('should form textarea validation work', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('Monaco Editor undo and close button should work for drawer Edit Article', () => {
@@ -423,12 +421,11 @@ describe('article-listing-monaco-editor.component', () => {
       })
     );
 
-    it('should click undo and close button work', fakeAsync(() => {
-      tick(20);
+    it('should click undo and close button work', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('Monaco Editor submit and close button should work for drawer Edit Article', () => {
@@ -546,12 +543,11 @@ describe('article-listing-monaco-editor.component', () => {
       })
     );
 
-    it('should click submit and close button work', fakeAsync(() => {
-      tick(20);
+    it('should click submit and close button work', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('Monaco Editor submit button should work for drawer Edit Article', () => {
@@ -623,12 +619,11 @@ describe('article-listing-monaco-editor.component', () => {
       })
     );
 
-    it('should click submit and close button work', fakeAsync(() => {
-      tick(20);
+    it('should click submit and close button work', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('Monaco Editor confirm password drawer should open on top of drawer Create/Edit Article', () => {
@@ -785,12 +780,11 @@ describe('article-listing-monaco-editor.component', () => {
       })
     );
 
-    it('should click submit button should show confirm password', fakeAsync(() => {
-      tick(20);
+    it('should click submit button should show confirm password', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 });
 

@@ -6,7 +6,7 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { Component, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -88,7 +88,7 @@ function expectDrawerOpen(
     overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
   ).toBe(true);
   const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-  expect(buttons.length).not.toBe(0);
+  expect(buttons.length).toBeGreaterThanOrEqual(5);
   expect(buttons[4].nativeElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
   const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
@@ -111,7 +111,7 @@ function expectArticleTags(
     overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
   ).toBe(true);
   const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-  expect(buttons.length).not.toBe(0);
+  expect(buttons.length).toBeGreaterThanOrEqual(2);
   expect(buttons[1].nativeElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
   const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
@@ -129,7 +129,7 @@ function expectNewArticle(
     overlayContainer.getContainerElement().querySelector('.ant-drawer')!.classList.contains('ant-drawer-open')
   ).toBe(true);
   const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-  expect(buttons.length).not.toBe(0);
+  expect(buttons.length).toBeGreaterThanOrEqual(3);
   expect(buttons[2].nativeElement.firstElementChild!.classList.contains('ant-btn-loading-icon')).toBe(true);
 
   const typography = overlayContainer.getContainerElement().querySelector('.ant-typography');
@@ -199,7 +199,7 @@ describe('article-listing.component', () => {
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(1);
       helpComponent.setNeedsRefreshToken();
       buttons[0].nativeElement.click();
       fixture.detectChanges();
@@ -244,12 +244,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click close button work for openMessageDrawer', fakeAsync(() => {
-      tick(20);
+    it('should click close button work for openMessageDrawer', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('confirm password drawer should open on top of drawer Create/Edit Tags', () => {
@@ -291,7 +290,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(5);
       buttons[4].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -462,8 +461,7 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click new tag button after confirm password return error', fakeAsync(() => {
-      tick(20);
+    it('should click new tag button after confirm password return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       fixture.detectChanges();
@@ -472,7 +470,7 @@ describe('article-listing.component', () => {
       );
       expect(errors[0]).toBe(`'Tag Json Title' must be unique.`);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('close button should work for drawer Article Tags', () => {
@@ -512,7 +510,7 @@ describe('article-listing.component', () => {
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(2);
       buttons[1].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -555,12 +553,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click close button close drawer Article Tags', fakeAsync(() => {
-      tick(20);
+    it('should click close button close drawer Article Tags', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('tag filter should work for drawer Article Tags', () => {
@@ -600,7 +597,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(2);
       buttons[1].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -799,11 +796,10 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click link/edit tags button work', fakeAsync(() => {
-      tick(20);
+    it('should click link/edit tags button work', () => {
       helpFixture.detectChanges();
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('edit existing tag should work for drawer Create/Edit Tags', () => {
@@ -843,7 +839,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(5);
       buttons[4].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1033,11 +1029,10 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click link/edit tags button work', fakeAsync(() => {
-      tick(20);
+    it('should click link/edit tags button work', () => {
       helpFixture.detectChanges();
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('new tag button should work for drawer Create/Edit Tags', () => {
@@ -1079,7 +1074,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(5);
       buttons[4].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1130,8 +1125,7 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click new tag button return error', fakeAsync(() => {
-      tick(20);
+    it('should click new tag button return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       fixture.detectChanges();
@@ -1140,7 +1134,7 @@ describe('article-listing.component', () => {
       );
       expect(errors[0]).toBe(`'Tag Json Title' must be unique.`);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('cancel button should work for drawer Create/Edit Tags', () => {
@@ -1182,7 +1176,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(5);
       buttons[4].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1227,12 +1221,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click cancel button close drawer Create/Edit Tags', fakeAsync(() => {
-      tick(20);
+    it('should click cancel button close drawer Create/Edit Tags', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('apply button should work for drawer Create/Edit Tags', () => {
@@ -1274,7 +1267,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(5);
       buttons[4].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1319,12 +1312,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click apply button close drawer Create/Edit Tags', fakeAsync(() => {
-      tick(20);
+    it('should click apply button close drawer Create/Edit Tags', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('confirm password drawer should open on top of drawer New Article', () => {
@@ -1366,7 +1358,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(3);
       buttons[2].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1476,8 +1468,7 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click submit button after confirm password return error', fakeAsync(() => {
-      tick(20);
+    it('should click submit button after confirm password return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       fixture.detectChanges();
@@ -1488,7 +1479,7 @@ describe('article-listing.component', () => {
         `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
       );
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('confirm password drawer should open on top of drawer Edit Article', () => {
@@ -1530,7 +1521,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(4);
       buttons[3].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1628,12 +1619,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click submit button after confirm password close drawer Edit Article', fakeAsync(() => {
-      tick(20);
+    it('should click submit button after confirm password close drawer Edit Article', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('close button should work for drawer New Article', () => {
@@ -1673,7 +1663,7 @@ describe('article-listing.component', () => {
     beforeEach(waitForAsync(() => {
       fixture.detectChanges();
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(3);
       buttons[2].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1716,12 +1706,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click close button close drawer New Article', fakeAsync(() => {
-      tick(20);
+    it('should click close button close drawer New Article', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('submit button should work for drawer New Article ', () => {
@@ -1763,7 +1752,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(3);
       buttons[2].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -1905,8 +1894,7 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click submit button return error', fakeAsync(() => {
-      tick(20);
+    it('should click submit button return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       fixture.detectChanges();
@@ -1917,7 +1905,7 @@ describe('article-listing.component', () => {
         `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
       );
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('reset button should work for drawer New Article', () => {
@@ -1959,7 +1947,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(3);
       buttons[2].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -2022,12 +2010,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click reset button disable submit button', fakeAsync(() => {
-      tick(20);
+    it('should click reset button disable submit button', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('undo button should work for drawer Edit Article', () => {
@@ -2069,7 +2056,7 @@ describe('article-listing.component', () => {
       expect(component.articleList().length).not.toBe(0);
       expect(component.tagList().length).not.toBe(0);
       const buttons = fixture.debugElement.queryAll(By.directive(NzButtonComponent));
-      expect(buttons.length).not.toBe(0);
+      expect(buttons.length).toBeGreaterThanOrEqual(4);
       buttons[3].nativeElement.click();
       fixture.detectChanges();
     }));
@@ -2124,12 +2111,11 @@ describe('article-listing.component', () => {
       })
     );
 
-    it('should click undo button enable submit button', fakeAsync(() => {
-      tick(20);
+    it('should click undo button enable submit button', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 });
 

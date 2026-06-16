@@ -4,9 +4,9 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup, AbstractControl } from '@angular/forms';
 
 import {
@@ -100,23 +100,21 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should patchValue return form validation required errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation required errors', () => {
       helpComponent.tagForm.patchValue({ title: '' });
       helpFixture.detectChanges();
       const title = helpComponent.tagForm.get('title')!.errors;
       expect(title).toBeTruthy();
       expect(title!.required).toBeTruthy(true);
-    }));
+    });
 
-    it('should patchValue return form validation min errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation min errors', () => {
       helpComponent.tagForm.patchValue({ title: 'a' });
       helpFixture.detectChanges();
       const title = helpComponent.tagForm.get('title')!.errors;
       expect(title).toBeTruthy();
       expect(title!.min).toBeTruthy(true);
-    }));
+    });
   });
 
   describe('articleForm validation errors', () => {
@@ -141,8 +139,7 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should patchValue return form validation required errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation required errors', () => {
       helpComponent.articleForm.patchValue({ slug: '', title: '', description: '', published: false });
       helpFixture.detectChanges();
       const slug = helpComponent.articleForm.get('slug')!.errors;
@@ -154,10 +151,9 @@ describe('article-listing.store', () => {
       expect(slug!.required).toBe(true);
       expect(title!.required).toBeTruthy(true);
       expect(description!.required).toBeTruthy(true);
-    }));
+    });
 
-    it('should patchValue return form validation min errors', fakeAsync(() => {
-      tick(20);
+    it('should patchValue return form validation min errors', () => {
       helpComponent.articleForm.patchValue({ slug: 'a', title: 'a', description: 'a', published: false });
       helpFixture.detectChanges();
       const slug = helpComponent.articleForm.get('slug')!.errors;
@@ -169,7 +165,7 @@ describe('article-listing.store', () => {
       expect(slug!.min).toBe(true);
       expect(title!.min).toBeTruthy(true);
       expect(description!.min).toBeTruthy(true);
-    }));
+    });
   });
 
   describe('createTag function', () => {
@@ -203,14 +199,13 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should createTag return validation error', fakeAsync(() => {
-      tick(20);
+    it('should createTag return validation error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.tagForm.get('title')!.errors).not.toBeTruthy();
       expect(helpComponent.articleListingStoreErrors.length).toBe(1);
       expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Tag Json Title' must be unique.`);
-    }));
+    });
   });
 
   describe('editTag function', () => {
@@ -244,14 +239,13 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should editTag return validation error', fakeAsync(() => {
-      tick(20);
+    it('should editTag return validation error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.tagForm.get('title')!.errors).not.toBeTruthy();
       expect(helpComponent.articleListingStoreErrors.length).toBe(1);
       expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Tag Json Title' must be unique.`);
-    }));
+    });
   });
 
   describe('deleteTag function', () => {
@@ -285,12 +279,11 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should deleteTag return success with -1', fakeAsync(() => {
-      tick(20);
+    it('should deleteTag return success with -1', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleListingStoreErrors.length).toBe(0);
-    }));
+    });
   });
 
   describe('deleteArticle function', () => {
@@ -324,12 +317,11 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should deleteArticle return success with -1', fakeAsync(() => {
-      tick(20);
+    it('should deleteArticle return success with -1', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleListingStoreErrors.length).toBe(0);
-    }));
+    });
   });
 
   describe('editArticle function', () => {
@@ -367,8 +359,7 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should createArticle return validation error', fakeAsync(() => {
-      tick(20);
+    it('should createArticle return validation error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleForm.get('slug')!.errors).not.toBeTruthy();
@@ -378,7 +369,7 @@ describe('article-listing.store', () => {
       expect(helpComponent.articleListingStoreErrors[0]).toBe(
         `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
       );
-    }));
+    });
   });
 
   describe('createArticle function 1', () => {
@@ -415,8 +406,7 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should createArticle return validation error', fakeAsync(() => {
-      tick(20);
+    it('should createArticle return validation error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleForm.get('slug')!.errors).not.toBeTruthy();
@@ -424,7 +414,7 @@ describe('article-listing.store', () => {
       expect(helpComponent.articleForm.get('description')!.errors).not.toBeTruthy();
       expect(helpComponent.articleListingStoreErrors.length).toBe(1);
       expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Article Json Title' must be unique.`);
-    }));
+    });
   });
 
   describe('createArticle function 2', () => {
@@ -461,8 +451,7 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should createArticle return duplicate error', fakeAsync(() => {
-      tick(20);
+    it('should createArticle return duplicate error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleForm.get('slug')!.errors).not.toBeTruthy();
@@ -472,7 +461,7 @@ describe('article-listing.store', () => {
       expect(helpComponent.articleListingStoreErrors[0]).toBe(
         `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
       );
-    }));
+    });
   });
 
   describe('setNeedsRefreshToken', () => {
@@ -529,12 +518,11 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should setNeedsRefreshToken return error', fakeAsync(() => {
-      tick(20);
+    it('should setNeedsRefreshToken return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleListingStoreErrors[0]).toBe('Please refresh your JWT token');
-    }));
+    });
   });
 
   describe('getArticleDetails function 3', () => {
@@ -568,14 +556,13 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticleDetails return not found error ', fakeAsync(() => {
-      tick(20);
+    it('should getArticleDetails return not found error ', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.currentArticle()).not.toBeTruthy();
       expect(helpComponent.articleListingStoreErrors.length).toBe(1);
       expect(helpComponent.articleListingStoreErrors[0]).toBe(`Queried object article was not found, Key: 0`);
-    }));
+    });
   });
 
   describe('getArticleDetails function 2', () => {
@@ -609,14 +596,13 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticleDetails return null tagList ', fakeAsync(() => {
-      tick(20);
+    it('should getArticleDetails return null tagList ', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.currentArticle()).toBeTruthy();
       expect(helpComponent.currentArticle()?.tagList.length).toBeTruthy(1);
       expect(helpComponent.articleListingStoreErrors.length).toBe(0);
-    }));
+    });
   });
 
   describe('getArticleDetails function 1', () => {
@@ -650,14 +636,13 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticleDetails return tagList ', fakeAsync(() => {
-      tick(20);
+    it('should getArticleDetails return tagList ', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.currentArticle()).toBeTruthy();
       expect(helpComponent.currentArticle()?.tagList.length).not.toBe(0);
       expect(helpComponent.articleListingStoreErrors.length).toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 1', () => {
@@ -695,13 +680,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return articles and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return articles and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).not.toBe(0);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 2', () => {
@@ -739,13 +723,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return zero articles and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return zero articles and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(0);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 3', () => {
@@ -783,13 +766,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return one article and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(1);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 4', () => {
@@ -827,13 +809,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return rest articles and total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return rest articles and total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(helpComponent.articleCount() - 1);
       expect(helpComponent.articleCount()).not.toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 5', () => {
@@ -872,13 +853,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 2 articles and total equals 2', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 2 articles and total equals 2', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(2);
       expect(helpComponent.articleCount()).toBe(2);
-    }));
+    });
   });
 
   describe('queryArticle function 6', () => {
@@ -917,13 +897,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return one article and total equals one', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return one article and total equals one', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(1);
       expect(helpComponent.articleCount()).toBe(1);
-    }));
+    });
   });
 
   describe('queryArticle function 7', () => {
@@ -963,13 +942,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return zero article and zero total', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return zero article and zero total', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(0);
       expect(helpComponent.articleCount()).toBe(0);
-    }));
+    });
   });
 
   describe('queryArticle function 8', () => {
@@ -1010,13 +988,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 2 articles and total equals 2 descending', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 2 articles and total equals 2 descending', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(2);
       expect(helpComponent.articleCount()).toBe(2);
-    }));
+    });
   });
 
   describe('onOffsetChange function 1', () => {
@@ -1066,13 +1043,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 0 articles and total equals 2', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 0 articles and total equals 2', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(0);
       expect(helpComponent.articleCount()).toBe(2);
-    }));
+    });
   });
 
   describe('onLimitChange function 1', () => {
@@ -1122,13 +1098,12 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getArticles return 1 articles and total equals 2', fakeAsync(() => {
-      tick(20);
+    it('should getArticles return 1 articles and total equals 2', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleList()?.length).toBe(1);
       expect(helpComponent.articleCount()).toBe(2);
-    }));
+    });
   });
 
   describe('getTags function', () => {
@@ -1163,18 +1138,16 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getTags return all tags', fakeAsync(() => {
-      tick(20);
+    it('should getTags return all tags', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.tagList()?.length).not.toBe(0);
-    }));
+    });
   });
 });
 
 @Component({
   template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [provideComponentStore(ArticleListingStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {

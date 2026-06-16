@@ -4,9 +4,9 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { apiPrefixInterceptor, authInterceptor } from '@app/shared/interceptors';
@@ -106,11 +106,10 @@ describe('profile.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getProfile return profile', fakeAsync(() => {
-      tick(20);
+    it('should getProfile return profile', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
-    }));
+    });
   });
 
   describe('getProfile function 2', () => {
@@ -154,19 +153,17 @@ describe('profile.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should getProfile return error', fakeAsync(() => {
-      tick(20);
+    it('should getProfile return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.authStoreError.length).toBe(0);
       expect(helpComponent.profile()).not.toBeTruthy();
-    }));
+    });
   });
 });
 
 @Component({
   template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager,
   providers: [provideComponentStore(ProfileStore)]
 })
 export class TestHelpComponent implements OnInit, OnDestroy {

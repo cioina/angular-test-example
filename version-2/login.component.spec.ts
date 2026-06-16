@@ -4,9 +4,9 @@
  */
 
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -217,12 +217,11 @@ describe('login.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should click submit button authenticate user', fakeAsync(() => {
-      tick(20);
+    it('should click submit button authenticate user', () => {
       helpFixture.detectChanges();
       expect(helpComponent.errors.length).toBe(0);
       expect(helpComponent.isAuthenticated()).toBe(true);
-    }));
+    });
   });
 
   describe('submit button should work for invalid credentials ', () => {
@@ -324,8 +323,7 @@ describe('login.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should click submit button not authenticate user and return error', fakeAsync(() => {
-      tick(20);
+    it('should click submit button not authenticate user and return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.errors[0]).toBe('Invalid credentials.');
       expect(helpComponent.isAuthenticated()).toBe(false);
@@ -333,13 +331,12 @@ describe('login.component', () => {
       fixture.detectChanges();
       expect(formGroup.get('email')!.value).not.toBe('incorrect@user');
       expect(formGroup.get('password')!.value).not.toBe(environment.testUserPassword);
-    }));
+    });
   });
 });
 
 @Component({
-  template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager
+  template: ``
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);

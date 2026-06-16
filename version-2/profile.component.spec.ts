@@ -5,9 +5,9 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors, HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit, inject, Injector, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync, inject as testInject } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
@@ -153,12 +153,11 @@ describe('profile.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should profile be null and user not authenticated', fakeAsync(() => {
-      tick(20);
+    it('should profile be null and user not authenticated', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(component.profile()).not.toBeTruthy();
-    }));
+    });
   });
 
   describe('should not activate profile.component when wrong token', () => {
@@ -216,12 +215,11 @@ describe('profile.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should profile be null', fakeAsync(() => {
-      tick(20);
+    it('should profile be null', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.profile()).not.toBeTruthy();
-    }));
+    });
   });
 
   describe('has profile if user is authenticated and localStorage.clear()', () => {
@@ -268,12 +266,11 @@ describe('profile.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should has profile and user authenticated', fakeAsync(() => {
-      tick(20);
+    it('should has profile and user authenticated', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.profile()).toBeTruthy();
-    }));
+    });
   });
 
   describe('Log Out button should work', () => {
@@ -332,12 +329,11 @@ describe('profile.component', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should has profile and user authenticated', fakeAsync(() => {
-      tick(20);
+    it('should has profile and user authenticated', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.profile()).toBeTruthy();
-    }));
+    });
   });
 
   describe('change password', () => {
@@ -440,12 +436,11 @@ describe('profile.component', () => {
       })
     );
 
-    it('should form validation work', fakeAsync(() => {
-      tick(20);
+    it('should form validation work', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('logout confirm password drawer should open on top of drawer Update Account', () => {
@@ -612,12 +607,11 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click submit and signOut buttons work for ConfirmPassword', fakeAsync(() => {
-      tick(20);
+    it('should click submit and signOut buttons work for ConfirmPassword', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(false);
       expect(helpComponent.errors.length).toBe(0);
-    }));
+    });
   });
 
   describe('close confirm password drawer should open on top of drawer Update Account', () => {
@@ -781,13 +775,12 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click submit and close buttons work for ConfirmPassword', fakeAsync(() => {
-      tick(20);
+    it('should click submit and close buttons work for ConfirmPassword', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
       expect(helpComponent.errors.length).toBe(0);
-    }));
+    });
   });
 
   describe('cancel confirm password drawer should open on top of drawer Update Account', () => {
@@ -951,13 +944,12 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click submit button return invalid error', fakeAsync(() => {
-      tick(20);
+    it('should click submit button return invalid error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
       expect(helpComponent.errors[0]).toBe('Invalid credentials.');
-    }));
+    });
   });
 
   describe('confirm password drawer should open on top of drawer Update Account', () => {
@@ -1144,13 +1136,12 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click submit button refresh token and return error', fakeAsync(() => {
-      tick(20);
+    it('should click submit button refresh token and return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
       expect(helpComponent.errors[0]).toBe('The user name has been taken.');
-    }));
+    });
   });
 
   describe('close button should work for drawer Update Account', () => {
@@ -1250,12 +1241,11 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click close button close drawer', fakeAsync(() => {
-      tick(20);
+    it('should click close button close drawer', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('submit button should work for drawer Update Account', () => {
@@ -1327,13 +1317,12 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click submit button return error', fakeAsync(() => {
-      tick(20);
+    it('should click submit button return error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
       expect(helpComponent.errors[0]).toBe('The user name has been taken.');
-    }));
+    });
   });
 
   describe('reset button should work for drawer Update Account', () => {
@@ -1407,12 +1396,11 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click reset button disable submit button', fakeAsync(() => {
-      tick(20);
+    it('should click reset button disable submit button', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 
   describe('undo button should work for drawer Update Account', () => {
@@ -1507,18 +1495,16 @@ describe('profile.component', () => {
       })
     );
 
-    it('should click undo button enable submit button', fakeAsync(() => {
-      tick(20);
+    it('should click undo button enable submit button', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(component.user()?.email).toBe(environment.testUserEmail);
-    }));
+    });
   });
 });
 
 @Component({
-  template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager
+  template: ``
 })
 export class TestHelpComponent implements OnInit, OnDestroy {
   readonly #authStore = inject(AuthStore);
