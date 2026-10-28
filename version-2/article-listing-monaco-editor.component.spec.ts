@@ -5,7 +5,7 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -789,8 +789,7 @@ describe('article-listing-monaco-editor.component', () => {
 });
 
 @Component({
-  template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager
+  template: ``
 })
 export class TestHelpComponent implements OnDestroy {
   readonly #authStore = inject(AuthStore);

@@ -5,7 +5,7 @@
 
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { Component, OnDestroy, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync, inject as testInject } from '@angular/core/testing';
 import { FormControl, FormGroup } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -223,7 +223,7 @@ describe('article-listing.component', () => {
         .querySelectorAll('h5.ant-typography.ant-typography-danger');
       expect(messages.length).toBe(1);
       expect(messages[0].textContent?.trim()).toBe(
-        'Http failure response for http://localhost:1503/api/v1.0/articles/all: 422 Unprocessable Entity'
+        `Http failure response for ${environment.api_url}/articles/all: 422 Unprocessable Entity`
       );
       const xButtons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn');
       expect(xButtons.length).toBe(1);
@@ -1475,9 +1475,7 @@ describe('article-listing.component', () => {
       const errors = Object.keys(component.errorResponse()?.errors || {}).map(
         key => `${component.errorResponse()!.errors[key]}`
       );
-      expect(errors[0]).toBe(
-        `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
-      );
+      expect(errors[0]).toBe(`'Article Json Slug' must be unique.`);
       expect(component.user()?.email).toBe(environment.testUserEmail);
     });
   });
@@ -1901,9 +1899,7 @@ describe('article-listing.component', () => {
       const errors = Object.keys(component.errorResponse()?.errors || {}).map(
         key => `${component.errorResponse()!.errors[key]}`
       );
-      expect(errors[0]).toBe(
-        `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
-      );
+      expect(errors[0]).toBe(`'Article Json Slug' must be unique.`);
       expect(component.user()?.email).toBe(environment.testUserEmail);
     });
   });
@@ -2120,8 +2116,7 @@ describe('article-listing.component', () => {
 });
 
 @Component({
-  template: ``,
-  changeDetection: ChangeDetectionStrategy.Eager
+  template: ``
 })
 export class TestHelpComponent implements OnDestroy {
   readonly #authStore = inject(AuthStore);

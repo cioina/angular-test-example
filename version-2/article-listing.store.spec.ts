@@ -366,9 +366,7 @@ describe('article-listing.store', () => {
       expect(helpComponent.articleForm.get('title')!.errors).not.toBeTruthy();
       expect(helpComponent.articleForm.get('description')!.errors).not.toBeTruthy();
       expect(helpComponent.articleListingStoreErrors.length).toBe(1);
-      expect(helpComponent.articleListingStoreErrors[0]).toBe(
-        `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
-      );
+      expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Article Json Slug' must be unique.`);
     });
   });
 
@@ -406,14 +404,15 @@ describe('article-listing.store', () => {
       jasmine.DEFAULT_TIMEOUT_INTERVAL = TIMEOUT_INTERVAL;
     });
 
-    it('should createArticle return validation error', () => {
+    it('1should createArticle return validation error', () => {
       helpFixture.detectChanges();
       expect(helpComponent.isAuthenticated()).toBe(true);
       expect(helpComponent.articleForm.get('slug')!.errors).not.toBeTruthy();
       expect(helpComponent.articleForm.get('title')!.errors).not.toBeTruthy();
       expect(helpComponent.articleForm.get('description')!.errors).not.toBeTruthy();
-      expect(helpComponent.articleListingStoreErrors.length).toBe(1);
+      expect(helpComponent.articleListingStoreErrors.length).toBe(2);
       expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Article Json Title' must be unique.`);
+      expect(helpComponent.articleListingStoreErrors[1]).toBe(`'Article Json Slug' must be unique.`);
     });
   });
 
@@ -458,9 +457,7 @@ describe('article-listing.store', () => {
       expect(helpComponent.articleForm.get('title')!.errors).not.toBeTruthy();
       expect(helpComponent.articleForm.get('description')!.errors).not.toBeTruthy();
       expect(helpComponent.articleListingStoreErrors.length).toBe(1);
-      expect(helpComponent.articleListingStoreErrors[0]).toBe(
-        `Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).`
-      );
+      expect(helpComponent.articleListingStoreErrors[0]).toBe(`'Article Json Slug' must be unique.`);
     });
   });
 

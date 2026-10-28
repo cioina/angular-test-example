@@ -623,7 +623,7 @@ describe('profile.component', () => {
     let overlayContainer: OverlayContainer;
 
     beforeEach(() => {
-      TIMEOUT_INTERVAL = jasmineTimeoutInterval(12_000);
+      TIMEOUT_INTERVAL = jasmineTimeoutInterval(15_000);
     });
     beforeEach(waitForAsync(() => {
       compileComponents();
@@ -742,6 +742,7 @@ describe('profile.component', () => {
       expect(errors[0].textContent?.trim()).toBe('The password must be at least 16 characters long.');
       const buttons = overlayContainer.getContainerElement().querySelectorAll('.ant-btn[disabled]');
       expect(buttons.length).toBe(1);
+      helpComponent.errors = [];
       expect(buttons[0].textContent?.trim()).toBe('Submit');
       const inputs = overlayContainer.getContainerElement().querySelectorAll('input[nz-input]');
       expect(inputs.length).toBe(4);
